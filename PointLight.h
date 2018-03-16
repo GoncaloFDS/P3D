@@ -2,12 +2,12 @@
 #include "Vector3.h"
 #include "projects/RayTracer/Color.h"
 
-class PositionalLight
+class PointLight
 {
 public:
-	PositionalLight();
-	~PositionalLight();
+	PointLight();
+	~PointLight();
 	Vector3 Position;
-	Color Color;
+	Vector3 Color;
 };
 

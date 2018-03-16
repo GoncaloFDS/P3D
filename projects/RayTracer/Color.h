@@ -1,8 +1,7 @@
 #pragma once
 #include "Vector3.h"
 
-class Color
-{
+class Color : Vector3 {
 public:
 	Color();
 	~Color();

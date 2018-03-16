@@ -6,7 +6,7 @@ class Material
 public:
 	Material();
 	~Material();
-	Color color;
+	Vector3 color;
 	float Kd;
 	float Ks;
 	float shininess;

@@ -8,7 +8,7 @@
 #include <fstream>
 #include "Camera.h"
 #include <vector>
-#include "../../PositionalLight.h"
+#include "../../PointLight.h"
 #include "../../Material.h"
 #include "../../SceneObject.h"
 #include "../../Sphere.h"
@@ -20,12 +20,12 @@ public:
 	~Scene();
 	std::vector<SceneObject*> GetObjects();
 	bool load_nff(std::string filepath);
-	Color backgroundColor;
+	Vector3 backgroundColor;
 	Camera* GetCamera();
-	std::vector<PositionalLight*> getLights();
+	std::vector<PointLight*> getLights();
 private:
 	Camera *camera;
-	std::vector<PositionalLight*> lightPoints;
+	std::vector<PointLight*> lightPoints;
 	std::vector<SceneObject*> objects;
 	std::vector<Material> materials;
 	void parseBackgroundColor( std::stringstream& in);

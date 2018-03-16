@@ -128,9 +128,9 @@ Matrix3 Matrix3::operator*(float scalar)
 
 Vector3 Matrix3::operator*(Vector3 vector)
 {
-	float x = data[0] * vector.coordinates[0] + data[3] * vector.coordinates[1] + data[6] * vector.coordinates[2];
-	float y = data[1] * vector.coordinates[0] + data[4] * vector.coordinates[1] + data[7] * vector.coordinates[2];
-	float z = data[2] * vector.coordinates[0] + data[5] * vector.coordinates[1] + data[8] * vector.coordinates[2];
+	float x = data[0] * vector.xyz[0] + data[3] * vector.xyz[1] + data[6] * vector.xyz[2];
+	float y = data[1] * vector.xyz[0] + data[4] * vector.xyz[1] + data[7] * vector.xyz[2];
+	float z = data[2] * vector.xyz[0] + data[5] * vector.xyz[1] + data[8] * vector.xyz[2];
 
 	return Vector3(x, y, z);
 
@@ -156,7 +156,7 @@ Matrix3 Matrix3::operator*(Matrix3 matrix)
 	
 }
 Matrix3 Matrix3::DualMatrix(Vector3 axis) {
-	return Matrix3(0.0, axis.coordinates[2], -axis.coordinates[1], -axis.coordinates[2], 0.0f, axis.coordinates[0], axis.coordinates[1], -axis.coordinates[0], 0.0f);
+	return Matrix3(0.0, axis.xyz[2], -axis.xyz[1], -axis.xyz[2], 0.0f, axis.xyz[0], axis.xyz[1], -axis.xyz[0], 0.0f);
 }
 Matrix3 Matrix3::operator/(float scalar)
 {

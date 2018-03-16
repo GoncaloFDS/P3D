@@ -189,7 +189,7 @@ Matrix4 Matrix4::ViewMatrix(Vector3 center, Vector3 eye, Vector3 up)
 	Vector3 S = Vector3::crossProduct(V, up).normalize();
 	Vector3 U = Vector3::crossProduct(S, V).normalize();
 
-	return Matrix4(S.coordinates[0], U.coordinates[0], -V.coordinates[0], 0, S.coordinates[1], U.coordinates[1], -V.coordinates[1], 0, S.coordinates[2], U.coordinates[2], -V.coordinates[2], 0, (-S)*eye, (-U)*eye, V*eye, 1);
+	return Matrix4(S.xyz[0], U.xyz[0], -V.xyz[0], 0, S.xyz[1], U.xyz[1], -V.xyz[1], 0, S.xyz[2], U.xyz[2], -V.xyz[2], 0, (-S)*eye, (-U)*eye, V*eye, 1);
 
 //	return Matrix4(S.coordinates[0], S.coordinates[1], S.coordinates[2], (-S)*eye, U.coordinates[0], U.coordinates[1], U.coordinates[2], (-U)*eye, -V.coordinates[0], -V.coordinates[1], -V.coordinates[2], V*eye, 0,0,0,1 );
 	

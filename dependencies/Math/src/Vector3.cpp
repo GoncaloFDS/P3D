@@ -6,20 +6,20 @@
 
 Vector3::Vector3()
 {
-	coordinates[0] = 0;
-	coordinates[1] = 0;
-	coordinates[2] = 0;
+	xyz[0] = 0;
+	xyz[1] = 0;
+	xyz[2] = 0;
 }
 
 Vector3::Vector3(float x, float y, float z)
 {
-	coordinates[0] = x;
-	coordinates[1] = y;
-	coordinates[2] = z;
+	xyz[0] = x;
+	xyz[1] = y;
+	xyz[2] = z;
 }
 
 Vector3 Vector3::operator-() {
-	return Vector3(-coordinates[0], -coordinates[1], -coordinates[2]);
+	return Vector3(-xyz[0], -xyz[1], -xyz[2]);
 }
 Vector3::~Vector3()
 {
@@ -27,38 +27,38 @@ Vector3::~Vector3()
 
 Vector3 Vector3::operator+(const Vector3 vector)
 {
-	return Vector3(coordinates[0] + vector.coordinates[0], coordinates[1] + vector.coordinates[1], coordinates[2] + vector.coordinates[2]);
+	return Vector3(xyz[0] + vector.xyz[0], xyz[1] + vector.xyz[1], xyz[2] + vector.xyz[2]);
 }
 
 Vector3 Vector3::operator+=(const Vector3 vector)
 {
-	this->coordinates[0] += vector.coordinates[0];
-	this->coordinates[1] += vector.coordinates[1];
-	this->coordinates[2] += vector.coordinates[2];
+	this->xyz[0] += vector.xyz[0];
+	this->xyz[1] += vector.xyz[1];
+	this->xyz[2] += vector.xyz[2];
 	return *this;
 }
 
 Vector3 Vector3::operator-=(const Vector3 vector)
 {
-	coordinates[0] -= vector.coordinates[0];
-	coordinates[1] -= vector.coordinates[1];
-	coordinates[2] -= vector.coordinates[2];
+	xyz[0] -= vector.xyz[0];
+	xyz[1] -= vector.xyz[1];
+	xyz[2] -= vector.xyz[2];
 	return *this;
 }
 
 Vector3 Vector3::operator-(const Vector3 vector)
 {
-	return Vector3(coordinates[0] - vector.coordinates[0], coordinates[1] - vector.coordinates[1], coordinates[2] - vector.coordinates[2]);
+	return Vector3(xyz[0] - vector.xyz[0], xyz[1] - vector.xyz[1], xyz[2] - vector.xyz[2]);
 }
 
 float Vector3::operator*(const Vector3 vector)
 {
-	return (coordinates[0] * vector.coordinates[0]) + (coordinates[1] * vector.coordinates[1]) + (coordinates[2] * vector.coordinates[2]);
+	return (xyz[0] * vector.xyz[0]) + (xyz[1] * vector.xyz[1]) + (xyz[2] * vector.xyz[2]);
 }
 
 Vector3 Vector3::operator*(const float c)
 {
-	return Vector3(c*coordinates[0], c*coordinates[1], c*coordinates[2]);
+	return Vector3(c*xyz[0], c*xyz[1], c*xyz[2]);
 }
 
 Vector3 Vector3::operator/(const float c)
@@ -68,9 +68,9 @@ Vector3 Vector3::operator/(const float c)
 
 Vector3 Vector3::operator=(const Vector3 vector)
 {
-	coordinates[0] = vector.coordinates[0];
-	coordinates[1] = vector.coordinates[1];
-	coordinates[2] = vector.coordinates[2];
+	xyz[0] = vector.xyz[0];
+	xyz[1] = vector.xyz[1];
+	xyz[2] = vector.xyz[2];
 
 	return *this;
 }
@@ -78,15 +78,15 @@ Vector3 Vector3::operator=(const Vector3 vector)
 Vector3 Vector3::crossProduct(Vector3 u, Vector3 v)
 {
 	
-	float x = (u.coordinates[1] * v.coordinates[2]) - (v.coordinates[1] * u.coordinates[2]);
-	float y = (u.coordinates[2] * v.coordinates[0]) - (v.coordinates[2] * u.coordinates[0]);
-	float z = (u.coordinates[0] * v.coordinates[1]) - (v.coordinates[0] * u.coordinates[1]);
+	float x = (u.xyz[1] * v.xyz[2]) - (v.xyz[1] * u.xyz[2]);
+	float y = (u.xyz[2] * v.xyz[0]) - (v.xyz[2] * u.xyz[0]);
+	float z = (u.xyz[0] * v.xyz[1]) - (v.xyz[0] * u.xyz[1]);
 	return Vector3(x,y,z);
 }
 
 bool Vector3::operator==(const Vector3 vector)
 {
-	return (fabs(coordinates[0] - vector.coordinates[0]) < THRESHOLD) && (fabs(coordinates[1] - vector.coordinates[1]) < THRESHOLD) && (fabs(coordinates[2] - vector.coordinates[2]) < THRESHOLD);
+	return (fabs(xyz[0] - vector.xyz[0]) < THRESHOLD) && (fabs(xyz[1] - vector.xyz[1]) < THRESHOLD) && (fabs(xyz[2] - vector.xyz[2]) < THRESHOLD);
 }
 
 bool Vector3::operator!=(const Vector3 vector)
@@ -101,15 +101,15 @@ Vector3 operator*(float c, Vector3 vector)
 
 std::ostream & operator<<(std::ostream &os, Vector3 vector)
 {
-	os << "Vector3[" << vector.coordinates[0] << "," << vector.coordinates[1] << "," << vector.coordinates[2] << "]";
+	os << "Vector3[" << vector.xyz[0] << "," << vector.xyz[1] << "," << vector.xyz[2] << "]";
 	return os;
 }
 
 std::istream & operator>>(std::istream &in, Vector3& v)
 {
-	in >> v.coordinates[0];
-	in >> v.coordinates[1];
-	in >> v.coordinates[2];
+	in >> v.xyz[0];
+	in >> v.xyz[1];
+	in >> v.xyz[2];
 	return in;
 }
 
@@ -118,7 +118,7 @@ std::istream & operator>>(std::istream &in, Vector3& v)
 
 float Vector3::quadrance()
 {
-	return (coordinates[0] * coordinates[0]) + (coordinates[1] * coordinates[1]) + (coordinates[2] * coordinates[2]);
+	return (xyz[0] * xyz[0]) + (xyz[1] * xyz[1]) + (xyz[2] * xyz[2]);
 }
 
 float Vector3::magnitude()
@@ -131,9 +131,9 @@ Vector3 Vector3::normalize()
 	float abs = magnitude();
 	Vector3 normalized = Vector3(0, 0, 0);
 	if (abs > 0) {
-		normalized.coordinates[0] = (1 / abs) * coordinates[0];
-		normalized.coordinates[1] = (1 / abs) * coordinates[1];
-		normalized.coordinates[2] = (1 / abs) * coordinates[2];
+		normalized.xyz[0] = (1 / abs) * xyz[0];
+		normalized.xyz[1] = (1 / abs) * xyz[1];
+		normalized.xyz[2] = (1 / abs) * xyz[2];
 	}
 	else {
 			throw std::exception("Invalid operation. Can't normalize null vector.");
@@ -144,8 +144,8 @@ Vector3 Vector3::normalize()
 Vector3 Vector3::clear()
 {
 	for (auto i = 0; i < 2; i++)
-		if (fabs(this->coordinates[0]) < THRESHOLD)
-			this->coordinates[i] = 0;
+		if (fabs(this->xyz[0]) < THRESHOLD)
+			this->xyz[i] = 0;
 	return *this;
 }
 

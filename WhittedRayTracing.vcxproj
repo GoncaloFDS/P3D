@@ -163,9 +163,8 @@
     <ClCompile Include="Hit.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Plane.cpp" />
-    <ClCompile Include="PositionalLight.cpp" />
+    <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="projects\RayTracer\Camera.cpp" />
-    <ClCompile Include="projects\RayTracer\Color.cpp" />
     <ClCompile Include="projects\RayTracer\Main.cpp" />
     <ClCompile Include="projects\RayTracer\Scene.cpp" />
     <ClCompile Include="Ray.cpp" />
@@ -176,9 +175,8 @@
     <ClInclude Include="Hit.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Plane.h" />
-    <ClInclude Include="PositionalLight.h" />
+    <ClInclude Include="PointLight.h" />
     <ClInclude Include="projects\RayTracer\Camera.h" />
-    <ClInclude Include="projects\RayTracer\Color.h" />
     <ClInclude Include="projects\RayTracer\Scene.h" />
     <ClInclude Include="projects\RayTracer\targetver.h" />
     <ClInclude Include="Ray.h" />

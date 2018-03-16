@@ -83,7 +83,7 @@ void Scene::parseResolution(std::stringstream& in)
 
 void Scene::parseLightPosition(std::stringstream& in)
 {
-	auto *light = new PositionalLight();
+	auto *light = new PointLight();
 	in >> light->Position;
 	Vector3 color;
 	in >> color;
@@ -165,7 +165,7 @@ void Scene::ParseLine(std::stringstream& in)
 			parsePolygonPatch(in); // Polygon Patch
 }
 
-std::vector<PositionalLight*> Scene::getLights()
+std::vector<PointLight*> Scene::getLights()
 {
 	return lightPoints;
 }

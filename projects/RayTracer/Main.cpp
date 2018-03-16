@@ -12,6 +12,7 @@
 #include <sstream>
 #include <string>
 #include <stdio.h>
+#include <algorithm> 
 
 #include <GL/glew.h>
 #include <GL/freeglut.h>
@@ -19,6 +20,7 @@
 #include "Color.h"
 #include "Scene.h"
 #include "../../Ray.h"
+#include <cstdlib>
 #define CAPTION "ray tracer"
 
 #define VERTEX_COORD_ATTRIB 0
@@ -55,7 +57,7 @@ int WindowHandle = 0;
 
 ///////////////////////////////////////////////////////////////////////  RAY-TRACE SCENE
 
-Color rayTracing(Ray ray, int depth, float RefrIndex)
+Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 {	
 	Hit closestHit;
 	SceneObject closestObj; 
@@ -69,24 +71,40 @@ Color rayTracing(Ray ray, int depth, float RefrIndex)
 		}
 	}
 
-	if (!closestHit.HasCollided) return scene->backgroundColor;
+	if (!closestHit.HasCollided) 
+		return scene->backgroundColor;
 	else {
-		//compute normal
-		Color color;
+		Vector3 normal(closestHit.Normal);
+		Vector3 color = closestObj.material.color * 0.5; //Ambient Color
+		Vector3 difColor, specColor;
+
+		Material mat = closestObj.material;
+
 		for (auto light : scene->getLights()) {
-			Vector3 L = light->Position - closestHit.Location;
-			if ((L * closestHit.Normal) > 0) {
-				Ray lightRay;
-				lightRay.Origin = closestHit.Location; //hit location + epsilon (offset)
-				lightRay.Direction = L.normalize();
-				//if in shadow ... 
-				color.r = color.r + closestObj.material.color.r * (closestObj.material.Kd + closestObj.material.Ks);
-				color.g = color.g + closestObj.material.color.g * (closestObj.material.Kd + closestObj.material.Ks);
-				color.b = color.b + closestObj.material.color.b * (closestObj.material.Kd + closestObj.material.Ks);
+			Vector3 lightDir = light->Position - closestHit.Location;
+			float distance = lightDir.magnitude();
+			lightDir = lightDir.normalize();
+			float lambertian = std::fmax(lightDir * normal, 0.0f);
+			float specular = 0;
+
+			if (lambertian > 0.0f) {
+				Vector3 viewDir = (scene->GetCamera()->Eye - closestHit.Location).normalize();
+				Vector3 Rr = 2 * (viewDir * closestHit.Normal)*closestHit.Normal - viewDir;
+				float specAngle = std::fmax(Rr * lightDir, 0.0f);
+				specular = pow(specAngle, closestObj.material.shininess);
+
+				difColor.r() += mat.color.r() * light->Color.r() * mat.Kd * lambertian / distance;
+				difColor.g() += mat.color.g() * light->Color.g() * mat.Kd * lambertian / distance;
+				difColor.b() += mat.color.b() * light->Color.b() * mat.Kd * lambertian / distance;
+
+				specColor.r() += mat.color.r() * light->Color.r() * mat.Ks * specular / distance;
+				specColor.g() += mat.color.g() * light->Color.g() * mat.Ks * specular / distance;
+				specColor.b() += mat.color.b() * light->Color.b() * mat.Ks * specular / distance;
 			}
-			return color;
-			//if (depth >= MAX_DEPTH) return color;
+			
 		}
+		
+		return color + difColor + specColor;
 	}
 	return scene->backgroundColor;
 }
@@ -260,13 +278,13 @@ void renderScene()
 		   // YOUR 2 FUNTIONS: 
 			
 			Ray ray = scene->GetCamera()->CalculatePrimaryRay(x, y);
-			Color color = rayTracing(ray, 1, 1.0 );
+			Vector3 color = rayTracing(ray, 1, 1.0 );
 
 			vertices[index_pos++]= (float)x;
 			vertices[index_pos++]= (float)y;
-			colors[index_col++]= (float)color.r;
-			colors[index_col++]= (float)color.g;
-			colors[index_col++]= (float)color.b;	
+			colors[index_col++]= color.r();
+			colors[index_col++]= color.g();
+			colors[index_col++]= color.b();	
 
 			if(draw_mode == 0) {  // desenhar o conteúdo da janela ponto a ponto
 				drawPoints();

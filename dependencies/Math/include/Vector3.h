@@ -8,7 +8,7 @@
 class Vector3
 {
 public:
-	float coordinates[3];
+	float xyz[3];
 	Vector3();
 	Vector3(float, float, float);
 	Vector3 operator-();
@@ -31,7 +31,12 @@ public:
 	float magnitude();
 	Vector3 normalize();
 	Vector3 clear();
-
+	float& x() { return xyz[0]; };
+	float& y() { return xyz[1]; };
+	float& z() { return xyz[2]; };
+	float& r() { return xyz[0]; };
+	float& g() { return xyz[1]; };
+	float& b() { return xyz[2]; };
 };
 
 #endif

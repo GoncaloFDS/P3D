@@ -16,9 +16,9 @@ Vector4::Vector4(float x, float y, float z, float w)
 
 Vector4::Vector4(Vector3 v)
 {
-	coordinates[0] = v.coordinates[0];
-	coordinates[1] = v.coordinates[1];
-	coordinates[2] = v.coordinates[2];
+	coordinates[0] = v.xyz[0];
+	coordinates[1] = v.xyz[1];
+	coordinates[2] = v.xyz[2];
 	coordinates[3] = 1;
 }
 
