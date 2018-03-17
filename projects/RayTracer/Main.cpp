@@ -79,7 +79,16 @@ double calculateClossestHit(Ray ray, double Tmin, Hit &hit)
 	}	return Tmin;
 }
 
+Ray calculateReflectedRay(Hit hit)
+{
+	Vector3 ViewDir = (scene->GetCamera()->Eye - hit.Location).normalize();
+	Vector3 rr = 2 * (ViewDir * hit.Normal)*hit.Normal - ViewDir;
+	return Ray(hit.Location, rr);
+}
+
 ///////////////////////////////////////////////////////////////////////  RAY-TRACE SCENE
+
+
 
 Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 {	
@@ -96,7 +105,7 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 		Material mat = hit.Mat;
 		Vector3 color = mat.color * 0;
 		Vector3 difColor, specColor;
-
+		Vector3 rColor = scene->backgroundColor;
 
 		for (auto light : scene->getLights()) {
 			Vector3 lightDir = (light->Position - hit.Location).normalize();
@@ -113,13 +122,20 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 				float specAngle = std::fmax(Rr * lightDir, 0.0f);
 				specular = pow(specAngle, mat.shininess);
 
+				Ray reflected = calculateReflectedRay(hit);
+				rColor = rayTracing(reflected, depth+1, 1.0);
+
 				difColor.r() += mat.color.r() * light->Color.r() * mat.Kd * lambertian;
 				difColor.g() += mat.color.g() * light->Color.g() * mat.Kd * lambertian;
 				difColor.b() += mat.color.b() * light->Color.b() * mat.Kd * lambertian;
+
 																					  
 				specColor.r() += mat.color.r() * light->Color.r() * mat.Ks * specular ;
 				specColor.g() += mat.color.g() * light->Color.g() * mat.Ks * specular ;
 				specColor.b() += mat.color.b() * light->Color.b() * mat.Ks * specular ;
+				
+				//Vector3 tempColor(rColor.r() * mat.color.r(), rColor.g() * mat.color.g(), rColor.b() * mat.color.b());
+				color = mat.Ks*rColor*(1-mat.T);
 			}
 			
 		}
@@ -418,7 +434,7 @@ int main(int argc, char* argv[])
 {
     //INSERT HERE YOUR CODE FOR PARSING NFF FILES
 	scene = new Scene();
-	if (!(scene->load_nff("jap.nff"))) {
+	if (!(scene->load_nff("balls_medium.nff"))) {
 		std::cout << "Failed to load scene" << std::endl;
 		std::cin.get();
 		return 0;
