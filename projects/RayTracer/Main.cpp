@@ -86,6 +86,24 @@ Ray calculateReflectedRay(Hit hit)
 	return Ray(hit.Location, rr);
 }
 
+Ray calculateRefractedRay(Hit hit, Material mat, float RefractionIndex) {
+	Vector3 v = (scene->GetCamera()->Eye - hit.Location).normalize();
+	Vector3 vt = (v*hit.Normal)*hit.Normal - v;
+	float sinOi = vt.magnitude();
+	float Oi = asinf(sinOi);
+	float n = RefractionIndex / mat.refractionIndex;
+	float Oc = asinf(n);
+	if (Oi >= Oc) {
+		return Ray();
+	}
+	float sinOt = n*sinOi;
+	float cosOt = sqrtf(1 - (sinOt*sinOt));
+	Vector3 t = vt.normalize();
+	Vector3 rt = sinOt * t + cosOt * (-(hit.Normal));
+	
+	return Ray(hit.Location, rt);
+}
+
 ///////////////////////////////////////////////////////////////////////  RAY-TRACE SCENE
 
 
@@ -133,7 +151,6 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 				specColor.g() += mat.color.g() * light->Color.g() * ksSpec;
 				specColor.b() += mat.color.b() * light->Color.b() * ksSpec;
 				
-				//Vector3 tempColor(rColor.r() * mat.color.r(), rColor.g() * mat.color.g(), rColor.b() * mat.color.b());
 				
 			}
 			
@@ -144,8 +161,16 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 		if (depth >= MAX_DEPTH) return color;
 
 		Ray reflected = calculateReflectedRay(hit);
-		rColor = rayTracing(reflected, depth + 1, 1.0);
-		color += mat.Ks*rColor*(1 - mat.T);
+		//rColor = rayTracing(reflected, depth + 1, 1.0);
+		//color += mat.Ks*rColor*(1 - mat.T);
+
+		//translucid
+		//ray = calculate ray in refracted direction;
+		Ray refracted = calculateRefractedRay(hit, mat, RefrIndex);
+		Vector3 refrColor = rayTracing(refracted, depth + 1, 1.0);
+		color += mat.T * refrColor;
+		//tColor = trace(ray,depth+1, index)
+		//color += mat.t*tColor
 
 
 		return color;
@@ -442,7 +467,7 @@ int main(int argc, char* argv[])
 {
     //INSERT HERE YOUR CODE FOR PARSING NFF FILES
 	scene = new Scene();
-	if (!(scene->load_nff("balls_medium.nff"))) {
+	if (!(scene->load_nff("mount_low.nff"))) {
 		std::cout << "Failed to load scene" << std::endl;
 		std::cin.get();
 		return 0;

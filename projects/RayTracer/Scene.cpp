@@ -103,6 +103,8 @@ void Scene::parseObjectMaterials(std::stringstream& in)
 	in >> material.shininess;
 	in >> material.T;
 	in >> material.refractionIndex;	
+	std::cout << "Refraction index: " << material.refractionIndex << std::endl;
+	std::cout << "Material transmitance: " << material.T << std::endl;
 	materials.push_back(material);
 }
 
