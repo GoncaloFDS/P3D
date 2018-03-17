@@ -55,51 +55,71 @@ int draw_mode=1;
 
 int WindowHandle = 0;
 
+bool isPointInShadow(Hit &hit, Vector3 lightDir)
+{
+	Ray shadowFeeler(hit.Location, lightDir);
+	
+	for (auto obj : scene->GetObjects()) {
+		Hit shadowHit = obj->CalculateIntersection(shadowFeeler);
+		if (shadowHit.HasCollided) 
+			return true;
+	}
+	return false;
+}
+
+double calculateClossestHit(Ray ray, double Tmin, Hit &hit)
+{
+	for (auto obj : scene->GetObjects()) {
+		Hit tempHit = obj->CalculateIntersection(ray);
+		if ((tempHit.HasCollided && tempHit.T < Tmin)) {
+			Tmin = tempHit.T;
+			hit = tempHit;
+			hit.Mat = obj->material;
+		}
+	}	return Tmin;
+}
+
 ///////////////////////////////////////////////////////////////////////  RAY-TRACE SCENE
 
 Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 {	
-	Hit closestHit;
-	SceneObject closestObj; 
+	Hit hit;
 	double Tmin = DBL_MAX;
-	auto objs = scene->GetObjects();
-	for(auto obj : objs) {
-		Hit currHit = obj->CalculateIntersection(ray);
-		if((currHit.HasCollided && currHit.T < Tmin)){
-			closestObj = *obj;
-			closestHit = currHit;
-		}
-	}
 
-	if (!closestHit.HasCollided) 
+	Tmin = calculateClossestHit(ray, Tmin, hit);
+
+
+	if (!hit.HasCollided) 
 		return scene->backgroundColor;
 	else {
-		Vector3 normal(closestHit.Normal);
-		Vector3 color = closestObj.material.color * 0.5; //Ambient Color
+		Vector3 normal(hit.Normal);
+		Material mat = hit.Mat;
+		Vector3 color = mat.color * 0;
 		Vector3 difColor, specColor;
 
-		Material mat = closestObj.material;
 
 		for (auto light : scene->getLights()) {
-			Vector3 lightDir = light->Position - closestHit.Location;
-			float distance = lightDir.magnitude();
-			lightDir = lightDir.normalize();
+			Vector3 lightDir = (light->Position - hit.Location).normalize();
+
+			if(isPointInShadow(hit, lightDir)) 
+				continue; // this light doesn't contribute for this point
+
 			float lambertian = std::fmax(lightDir * normal, 0.0f);
 			float specular = 0;
 
 			if (lambertian > 0.0f) {
-				Vector3 viewDir = (scene->GetCamera()->Eye - closestHit.Location).normalize();
-				Vector3 Rr = 2 * (viewDir * closestHit.Normal)*closestHit.Normal - viewDir;
+				Vector3 viewDir = (scene->GetCamera()->Eye - hit.Location).normalize();
+				Vector3 Rr = 2 * (viewDir * hit.Normal)*hit.Normal - viewDir;
 				float specAngle = std::fmax(Rr * lightDir, 0.0f);
-				specular = pow(specAngle, closestObj.material.shininess);
+				specular = pow(specAngle, mat.shininess);
 
-				difColor.r() += mat.color.r() * light->Color.r() * mat.Kd * lambertian / distance;
-				difColor.g() += mat.color.g() * light->Color.g() * mat.Kd * lambertian / distance;
-				difColor.b() += mat.color.b() * light->Color.b() * mat.Kd * lambertian / distance;
-
-				specColor.r() += mat.color.r() * light->Color.r() * mat.Ks * specular / distance;
-				specColor.g() += mat.color.g() * light->Color.g() * mat.Ks * specular / distance;
-				specColor.b() += mat.color.b() * light->Color.b() * mat.Ks * specular / distance;
+				difColor.r() += mat.color.r() * light->Color.r() * mat.Kd * lambertian;
+				difColor.g() += mat.color.g() * light->Color.g() * mat.Kd * lambertian;
+				difColor.b() += mat.color.b() * light->Color.b() * mat.Kd * lambertian;
+																					  
+				specColor.r() += mat.color.r() * light->Color.r() * mat.Ks * specular ;
+				specColor.g() += mat.color.g() * light->Color.g() * mat.Ks * specular ;
+				specColor.b() += mat.color.b() * light->Color.b() * mat.Ks * specular ;
 			}
 			
 		}

@@ -1,5 +1,6 @@
 #pragma once
 #include "Vector3.h"
+#include "Material.h"
 
 class Hit
 {
@@ -13,5 +14,6 @@ public:
 	bool HasCollided = false;
 	Vector3 Normal;
 	double T;
+	Material Mat;
 };
 
