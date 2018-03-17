@@ -26,7 +26,7 @@
 #define VERTEX_COORD_ATTRIB 0
 #define COLOR_ATTRIB 1
 
-#define MAX_DEPTH 6
+#define MAX_DEPTH 3
 
 // Points defined by 2 attributes: positions which are stored in vertices array and colors which are stored in colors array
 float *colors;
@@ -103,7 +103,7 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 	else {
 		Vector3 normal(hit.Normal);
 		Material mat = hit.Mat;
-		Vector3 color = mat.color * 0;
+		Vector3 color = mat.color * 0.1;
 		Vector3 difColor, specColor;
 		Vector3 rColor = scene->backgroundColor;
 
@@ -122,25 +122,33 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 				float specAngle = std::fmax(Rr * lightDir, 0.0f);
 				specular = pow(specAngle, mat.shininess);
 
-				Ray reflected = calculateReflectedRay(hit);
-				rColor = rayTracing(reflected, depth+1, 1.0);
+				
+				float KdLamb = mat.Kd * lambertian;
+				difColor.r() += mat.color.r() * light->Color.r() * KdLamb;
+				difColor.g() += mat.color.g() * light->Color.g() * KdLamb;
+				difColor.b() += mat.color.b() * light->Color.b() * KdLamb;
 
-				difColor.r() += mat.color.r() * light->Color.r() * mat.Kd * lambertian;
-				difColor.g() += mat.color.g() * light->Color.g() * mat.Kd * lambertian;
-				difColor.b() += mat.color.b() * light->Color.b() * mat.Kd * lambertian;
-
-																					  
-				specColor.r() += mat.color.r() * light->Color.r() * mat.Ks * specular ;
-				specColor.g() += mat.color.g() * light->Color.g() * mat.Ks * specular ;
-				specColor.b() += mat.color.b() * light->Color.b() * mat.Ks * specular ;
+				float ksSpec = mat.Ks * specular;
+				specColor.r() += mat.color.r() * light->Color.r() * ksSpec;
+				specColor.g() += mat.color.g() * light->Color.g() * ksSpec;
+				specColor.b() += mat.color.b() * light->Color.b() * ksSpec;
 				
 				//Vector3 tempColor(rColor.r() * mat.color.r(), rColor.g() * mat.color.g(), rColor.b() * mat.color.b());
-				color = mat.Ks*rColor*(1-mat.T);
+				
 			}
 			
 		}
-		
-		return color + difColor + specColor;
+
+		color += difColor + specColor;
+
+		if (depth >= MAX_DEPTH) return color;
+
+		Ray reflected = calculateReflectedRay(hit);
+		rColor = rayTracing(reflected, depth + 1, 1.0);
+		color += mat.Ks*rColor*(1 - mat.T);
+
+
+		return color;
 	}
 	return scene->backgroundColor;
 }
