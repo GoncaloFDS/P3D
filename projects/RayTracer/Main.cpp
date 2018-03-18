@@ -13,7 +13,8 @@
 #include <string>
 #include <stdio.h>
 #include <algorithm> 
-
+#include <cmath>
+#include "math.h"
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include "stdlib.h"
@@ -66,7 +67,10 @@ bool isPointInShadow(Hit &hit, Vector3 lightDir)
 	}
 	return false;
 }
-
+double clamp(double x, double upper, double lower)
+{
+	return std::min(upper, std::max(x, lower));
+}
 double calculateClossestHit(Ray ray, double Tmin, Hit &hit)
 {
 	for (auto obj : scene->GetObjects()) {
@@ -87,21 +91,29 @@ Ray calculateReflectedRay(Hit hit)
 }
 
 Ray calculateRefractedRay(Hit hit, Material mat, float RefractionIndex) {
-	Vector3 v = (scene->GetCamera()->Eye - hit.Location).normalize();
-	Vector3 vt = (v*hit.Normal)*hit.Normal - v;
-	float sinOi = vt.magnitude();
-	float Oi = asinf(sinOi);
-	float n = RefractionIndex / mat.refractionIndex;
-	float Oc = asinf(n);
-	if (Oi >= Oc) {
+	
+	//perform I dot N if result < 0 entering if result > 0 leaving
+	Vector3 I = (hit.Location - scene->GetCamera()->Eye).normalize();
+	Vector3 N = hit.Normal;
+	float NdotI = N * I;
+	float nr = 0;
+	if (NdotI < 0) {
+		//entering a new material
+		NdotI = -NdotI;
+		nr = RefractionIndex / mat.refractionIndex;
+	}
+	else {
+		//leaving a material
+		N = -hit.Normal;
+		nr = mat.refractionIndex / RefractionIndex;
+	}
+	float cosi = clamp(N*I, 1, -1);
+	float k = 1 - nr * nr * (1 - cosi * cosi);
+	if (k < 0) {
 		return Ray();
 	}
-	float sinOt = n*sinOi;
-	float cosOt = sqrtf(1 - (sinOt*sinOt));
-	Vector3 t = vt.normalize();
-	Vector3 rt = sinOt * t + cosOt * (-(hit.Normal));
-	
-	return Ray(hit.Location, rt);
+	Vector3 t = nr * I + (nr * cosi - sqrtf(k)) * N;
+	return Ray(hit.Location, t);
 }
 
 ///////////////////////////////////////////////////////////////////////  RAY-TRACE SCENE
@@ -166,9 +178,9 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 
 		//translucid
 		//ray = calculate ray in refracted direction;
-// 		Ray refracted = calculateRefractedRay(hit, mat, RefrIndex);
-// 		Vector3 refrColor = rayTracing(refracted, depth + 1, 1.0);
-// 		color += mat.T * refrColor;
+ 		Ray refracted = calculateRefractedRay(hit, mat, RefrIndex);
+ 		Vector3 refrColor = rayTracing(refracted, depth + 1, 1.0);
+ 		color += mat.T * refrColor;
 		//tColor = trace(ray,depth+1, index)
 		//color += mat.t*tColor
 
