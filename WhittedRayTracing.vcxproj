@@ -170,6 +170,7 @@
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="SceneObject.cpp" />
     <ClCompile Include="Sphere.cpp" />
+    <ClCompile Include="Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Hit.h" />
@@ -182,6 +183,7 @@
     <ClInclude Include="Ray.h" />
     <ClInclude Include="SceneObject.h" />
     <ClInclude Include="Sphere.h" />
+    <ClInclude Include="Triangle.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

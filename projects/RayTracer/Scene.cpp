@@ -2,6 +2,7 @@
 #include "../../Material.h"
 #include "../../Sphere.h"
 #include "../../Plane.h"
+#include "../../Triangle.h"
 
 
 Scene::Scene()
@@ -20,7 +21,7 @@ std::vector<SceneObject*> Scene::GetObjects()
 }
 
 bool Scene::load_nff(std::string filepath)
-{
+{	
 	std::ifstream file = std::ifstream(filepath);
 	if (file.fail()) {
 		std::string error = "The nff file " + filepath + " seems to be missing.";
@@ -29,7 +30,7 @@ bool Scene::load_nff(std::string filepath)
 	}
 	std::string line;
 	while (std::getline(file, line)) {
-		ParseLine(std::stringstream(line));
+		ParseLine(std::stringstream(line), file);
 	}
 	file.close();
 	return true;
@@ -114,7 +115,7 @@ void Scene::parseCone( std::stringstream& in)
 
 void Scene::parseSphere( std::stringstream& in)
 {
-	Sphere* sphe = new Sphere();
+	auto sphe = new Sphere();
 	in >> sphe->center;
 	in >> sphe->radius;
 	sphe->material = materials.back();
@@ -131,11 +132,29 @@ void Scene::parsePlane( std::stringstream& in) {
 	std::cout << "Plane: p1->" << plane->P1 << "Plane: p2->" << plane->P2 << "Plane: p3->" << plane->P3 <<std::endl;
 }
 
-void Scene::parsePolygonPatch( std::stringstream& in)
-{
+void Scene::parsePolygon(std::stringstream& in, std::ifstream& file) {
+	int n;
+	Vector3 verts[3];
+	in >> n;
+	std::cout << "Triangle vertices's count: " << n << std::endl;
+	if (n != 3) 
+		throw std::runtime_error("Parsing polygons that aren't triangles is not supported");
+	
+	std::string line;
+	for (int i = 0; i < n; i++) {
+		std::getline(file, line);
+		auto newLine = std::stringstream(line);
+		newLine >> verts[i];
+	}
+	
+	Triangle* triangle = new Triangle(verts[0], verts[1], verts[2]);
+	triangle->material = materials.back();
+	objects.push_back(triangle);
+	std::cout << "Triangle p1-> " << triangle->Vert1 << " p2-> " << triangle->Vert2 << " p3-> " << triangle->Vert3 << std::endl;
+
 }
 
-void Scene::ParseLine(std::stringstream& in)
+void Scene::ParseLine(std::stringstream& in, std::ifstream& file)
 {
 		std::string s;
 		in >> s;
@@ -162,9 +181,9 @@ void Scene::ParseLine(std::stringstream& in)
 		else if (s == "s")
 			parseSphere(in); // sphere primitive
 		else if (s == "pl")
-			parsePlane(in); // Polygon primitive
-		else if (s == "pp")
-			parsePolygonPatch(in); // Polygon Patch
+			parsePlane(in); // infinite plane
+		else if (s == "p")
+			parsePolygon(in, file); // poligon
 }
 
 std::vector<PointLight*> Scene::getLights()

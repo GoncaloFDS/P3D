@@ -23,6 +23,7 @@ public:
 	Vector3 operator/(const float vector);
 	Vector3 operator=(const Vector3 vector);
 	static Vector3 crossProduct(Vector3, Vector3);
+	Vector3 cross(Vector3);
 	bool operator==(const Vector3 vector);
 	bool operator!=(const Vector3 vector);
 	friend std::ostream& operator<<(std::ostream&, Vector3);

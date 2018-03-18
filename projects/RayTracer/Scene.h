@@ -28,6 +28,8 @@ private:
 	std::vector<PointLight*> lightPoints;
 	std::vector<SceneObject*> objects;
 	std::vector<Material> materials;
+	std::ifstream fileScene;
+
 	void parseBackgroundColor( std::stringstream& in);
 	void parseFrom(std::stringstream& in);
 	void parseAt(std::stringstream& in);
@@ -41,8 +43,8 @@ private:
 	void parseCone( std::stringstream& in);
 	void parseSphere( std::stringstream& in);
 	void parsePlane( std::stringstream& in);
-	void parsePolygonPatch( std::stringstream& in);
-	void ParseLine(std::stringstream& in);
+	void parsePolygon(std::stringstream& in, std::ifstream& file);
+	void ParseLine(std::stringstream& in, std::ifstream& file);
 
 };
 

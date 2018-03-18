@@ -34,4 +34,6 @@ Hit Sphere::CalculateIntersection(Ray ray)
 
 	if(t > KEPSILON) 
 		return Hit(ray.Origin + t * ray.Direction, true, (temp + t * ray.Direction)/radius, t);
+
+	return Hit(false);
 }

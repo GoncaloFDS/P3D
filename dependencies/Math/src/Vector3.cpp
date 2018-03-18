@@ -84,6 +84,11 @@ Vector3 Vector3::crossProduct(Vector3 u, Vector3 v)
 	return Vector3(x,y,z);
 }
 
+Vector3 Vector3::cross(Vector3 other)
+{
+	return crossProduct(*this, other);
+}
+
 bool Vector3::operator==(const Vector3 vector)
 {
 	return (fabs(xyz[0] - vector.xyz[0]) < THRESHOLD) && (fabs(xyz[1] - vector.xyz[1]) < THRESHOLD) && (fabs(xyz[2] - vector.xyz[2]) < THRESHOLD);

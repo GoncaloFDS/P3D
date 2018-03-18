@@ -121,7 +121,7 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 	else {
 		Vector3 normal(hit.Normal);
 		Material mat = hit.Mat;
-		Vector3 color = mat.color * 0.1;
+		Vector3 color = mat.color * 0.2f; // ambient color
 		Vector3 difColor, specColor;
 		Vector3 rColor = scene->backgroundColor;
 
@@ -160,15 +160,15 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 
 		if (depth >= MAX_DEPTH) return color;
 
-		Ray reflected = calculateReflectedRay(hit);
-		//rColor = rayTracing(reflected, depth + 1, 1.0);
-		//color += mat.Ks*rColor*(1 - mat.T);
+// 		Ray reflected = calculateReflectedRay(hit);
+// 		rColor = rayTracing(reflected, depth + 1, 1.0);
+// 		color += mat.Ks*rColor*(1 - mat.T);
 
 		//translucid
 		//ray = calculate ray in refracted direction;
-		Ray refracted = calculateRefractedRay(hit, mat, RefrIndex);
-		Vector3 refrColor = rayTracing(refracted, depth + 1, 1.0);
-		color += mat.T * refrColor;
+// 		Ray refracted = calculateRefractedRay(hit, mat, RefrIndex);
+// 		Vector3 refrColor = rayTracing(refracted, depth + 1, 1.0);
+// 		color += mat.T * refrColor;
 		//tColor = trace(ray,depth+1, index)
 		//color += mat.t*tColor
 
