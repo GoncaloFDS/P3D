@@ -185,6 +185,11 @@
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="Triangle.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="dependencies\Math\Math.vcxproj">
+      <Project>{8c1be1ac-1505-4131-a0bf-03997d94db2e}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

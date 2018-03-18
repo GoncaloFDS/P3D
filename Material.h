@@ -11,6 +11,7 @@ public:
 	float Ks;
 	float shininess;
 	float T;
+	bool isTranslucid;
 	float refractionIndex;
 };
 

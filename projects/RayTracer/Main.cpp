@@ -27,7 +27,7 @@
 #define VERTEX_COORD_ATTRIB 0
 #define COLOR_ATTRIB 1
 
-#define MAX_DEPTH 3
+#define MAX_DEPTH 4
 
 // Points defined by 2 attributes: positions which are stored in vertices array and colors which are stored in colors array
 float *colors;
@@ -91,29 +91,32 @@ Ray calculateReflectedRay(Hit hit)
 }
 
 Ray calculateRefractedRay(Hit hit, Material mat, float RefractionIndex) {
-	
-	//perform I dot N if result < 0 entering if result > 0 leaving
-	Vector3 I = (hit.Location - scene->GetCamera()->Eye).normalize();
-	Vector3 N = hit.Normal;
-	float NdotI = N * I;
-	float nr = 0;
+	Vector3 Nrefr = hit.Normal;
+	Vector3 I = hit.Location - scene->GetCamera()->Eye;
+	float NdotI = Nrefr * I;
+	NdotI = clamp(NdotI, 1, -1);
+	float etai = RefractionIndex, etat = mat.refractionIndex;
 	if (NdotI < 0) {
-		//entering a new material
+		//outside the surface, cos theta should be positive
 		NdotI = -NdotI;
-		nr = RefractionIndex / mat.refractionIndex;
 	}
 	else {
-		//leaving a material
-		N = -hit.Normal;
-		nr = mat.refractionIndex / RefractionIndex;
+		//inside the surface, reverse normal direction
+		Nrefr = -hit.Normal;
+		std::swap(etai, etat);
 	}
-	float cosi = clamp(N*I, 1, -1);
-	float k = 1 - nr * nr * (1 - cosi * cosi);
+
+	float eta = etai / etat;
+	float k = 1 - ((eta * eta)*(1 - NdotI * NdotI));
 	if (k < 0) {
-		return Ray();
+		return Ray(hit.Location, Vector3(0,0,0));
 	}
-	Vector3 t = nr * I + (nr * cosi - sqrtf(k)) * N;
-	return Ray(hit.Location, t);
+	else
+		return Ray(hit.Location, eta * (I) + (eta * NdotI - sqrtf(k))*Nrefr);
+	
+
+	
+	
 }
 
 ///////////////////////////////////////////////////////////////////////  RAY-TRACE SCENE
@@ -133,7 +136,7 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 	else {
 		Vector3 normal(hit.Normal);
 		Material mat = hit.Mat;
-		Vector3 color = mat.color * 0.2f; // ambient color
+		Vector3 color = mat.color * 0; // ambient color
 		Vector3 difColor, specColor;
 		Vector3 rColor = scene->backgroundColor;
 
@@ -172,15 +175,17 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 
 		if (depth >= MAX_DEPTH) return color;
 
-// 		Ray reflected = calculateReflectedRay(hit);
-// 		rColor = rayTracing(reflected, depth + 1, 1.0);
-// 		color += mat.Ks*rColor*(1 - mat.T);
+ 		//Ray reflected = calculateReflectedRay(hit);
+ 		//rColor = rayTracing(reflected, depth + 1, 1.0);
+		//color += mat.Ks*rColor*(1 - mat.T);
 
 		//translucid
 		//ray = calculate ray in refracted direction;
- 		Ray refracted = calculateRefractedRay(hit, mat, RefrIndex);
- 		Vector3 refrColor = rayTracing(refracted, depth + 1, 1.0);
- 		color += mat.T * refrColor;
+		if(mat.isTranslucid){
+ 			Ray refracted = calculateRefractedRay(hit, mat, RefrIndex);
+ 			Vector3 refrColor = rayTracing(refracted, depth + 1, RefrIndex);
+ 			color += mat.T * refrColor;
+		}
 		//tColor = trace(ray,depth+1, index)
 		//color += mat.t*tColor
 

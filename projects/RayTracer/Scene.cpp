@@ -103,6 +103,8 @@ void Scene::parseObjectMaterials(std::stringstream& in)
 	in >> material.Ks;
 	in >> material.shininess;
 	in >> material.T;
+	if (material.T > 0)
+		material.isTranslucid = true;
 	in >> material.refractionIndex;	
 	std::cout << "Refraction index: " << material.refractionIndex << std::endl;
 	std::cout << "Material transmitance: " << material.T << std::endl;
