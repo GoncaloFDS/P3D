@@ -27,7 +27,7 @@
 #define VERTEX_COORD_ATTRIB 0
 #define COLOR_ATTRIB 1
 
-#define MAX_DEPTH 3
+#define MAX_DEPTH 4
 
 // Points defined by 2 attributes: positions which are stored in vertices array and colors which are stored in colors array
 float *colors;
@@ -93,8 +93,9 @@ Ray calculateReflectedRay(Hit hit, Vector3 ViewDir)
 }
 
 Ray calculateRefractedRay(Hit hit, Ray ray, Material mat, float RefractionIndex) {
-	Vector3 Nrefr = hit.Normal;
+	Vector3 Nrefr = hit.Normal.normalize();;
 	Vector3 I = (hit.Location - ray.Origin).normalize();
+	//Vector3 I = -ray.Direction;
 	float NdotI = Nrefr * I;
 	NdotI = clamp(NdotI, 1, -1);
 	float etai = RefractionIndex, etat = mat.refractionIndex;
@@ -104,7 +105,7 @@ Ray calculateRefractedRay(Hit hit, Ray ray, Material mat, float RefractionIndex)
 	}
 	else {
 		//inside the surface, reverse normal direction
-		Nrefr = -hit.Normal;
+		Nrefr = -hit.Normal.normalize();
 		std::swap(etai, etat);
 	}
 
@@ -153,7 +154,8 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 			float specular = 0;
 
 			if (lambertian > 0.0f) {
-				viewDir = (ray.Direction).normalize();
+				//viewDir = (ray.Direction).normalize();
+				viewDir = (scene->GetCamera()->Eye - hit.Location).normalize();
 				Vector3 Rr = 2 * (viewDir * hit.Normal)*hit.Normal - viewDir;
 				float specAngle = std::fmax(Rr * lightDir, 0.0f);
 				specular = pow(specAngle, mat.shininess);
@@ -179,9 +181,9 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 		if (depth >= MAX_DEPTH) 
 			return color;
 		
- 		Ray reflected = calculateReflectedRay(hit, viewDir);
+ 		Ray reflected = calculateReflectedRay(hit, -ray.Direction);
  		rColor = rayTracing(reflected, depth + 1, RefrIndex);
-		color += mat.Ks*rColor*(1 - mat.T);
+		color += mat.Ks*rColor;
 
 		//translucid
 		//ray = calculate ray in refracted direction;
@@ -491,7 +493,7 @@ int main(int argc, char* argv[])
 {
     //INSERT HERE YOUR CODE FOR PARSING NFF FILES
 	scene = new Scene();
-	if (!(scene->load_nff("mount_low.nff"))) {
+	if (!(scene->load_nff("balls_medium.nff"))) {
 		std::cout << "Failed to load scene" << std::endl;
 		std::cin.get();
 		return 0;
