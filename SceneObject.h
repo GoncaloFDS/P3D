@@ -3,7 +3,7 @@
 #include "Hit.h"
 #include "Material.h"
 
-#define KEPSILON 0.0001f
+#define KEPSILON 0.001f
 
 class SceneObject
 {
