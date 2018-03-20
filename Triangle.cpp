@@ -14,7 +14,7 @@ Hit Triangle::CalculateIntersection(Ray ray) {
 
 	det = edge1 * pvec;
 
-	if (det < KEPSILON) // ray lies in plane of triangle
+	if (det < 0) // ray lies in plane of triangle
 		return Hit(false);
 
 	tvec = ray.Origin - Vert1;
