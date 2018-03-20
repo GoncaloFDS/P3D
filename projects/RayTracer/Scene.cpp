@@ -15,12 +15,12 @@ Scene::~Scene()
 {
 }
 
-std::vector<SceneObject*> Scene::GetObjects()
+std::vector<SceneObject*> Scene::getObjects()
 {
 	return objects;
 }
 
-bool Scene::load_nff(std::string filepath)
+bool Scene::loadNFF(std::string filepath)
 {	
 	std::ifstream file = std::ifstream(filepath);
 	if (file.fail()) {
@@ -37,7 +37,7 @@ bool Scene::load_nff(std::string filepath)
 
 }
 
-Camera* Scene::GetCamera()
+Camera* Scene::getCamera()
 {
 	return camera;
 }

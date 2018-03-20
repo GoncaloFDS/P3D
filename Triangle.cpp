@@ -32,8 +32,9 @@ Hit Triangle::CalculateIntersection(Ray ray) {
 	t = edge2 * qvec;
 	invDet = 1.0 / det;
 	t *= invDet;
-	u *= invDet;
-	v *= invDet;
+
+	if (t < KEPSILON)
+		return Hit(false);
 
 	return Hit(ray.Origin + t * ray.Direction, true, edge1.cross(edge2).normalize(), t);
 }

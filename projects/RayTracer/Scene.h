@@ -18,11 +18,12 @@ class Scene
 public:
 	Scene();
 	~Scene();
-	std::vector<SceneObject*> GetObjects();
-	bool load_nff(std::string filepath);
-	Vector3 backgroundColor;
-	Camera* GetCamera();
+	std::vector<SceneObject*> getObjects();
+	bool loadNFF(std::string filepath);
+	Camera* getCamera();
 	std::vector<PointLight*> getLights();
+	Vector3 backgroundColor;
+
 private:
 	Camera *camera;
 	std::vector<PointLight*> lightPoints;
@@ -37,7 +38,6 @@ private:
 	void parseAngle(std::stringstream& in);
 	void parseHither(std::stringstream& in);
 	void parseResolution(std::stringstream& in);
-	void parseViewingAngles( std::stringstream& in);
 	void parseLightPosition( std::stringstream& in);
 	void parseObjectMaterials( std::stringstream& in);
 	void parseCone( std::stringstream& in);

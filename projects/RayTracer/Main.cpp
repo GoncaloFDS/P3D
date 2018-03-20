@@ -27,7 +27,7 @@
 #define VERTEX_COORD_ATTRIB 0
 #define COLOR_ATTRIB 1
 
-#define MAX_DEPTH 4
+#define MAX_DEPTH 6
 
 // Points defined by 2 attributes: positions which are stored in vertices array and colors which are stored in colors array
 float *colors;
@@ -56,39 +56,38 @@ int draw_mode=1;
 
 int WindowHandle = 0;
 
-bool isPointInShadow(Hit &hit, Vector3 lightDir)
-{
+bool isPointInShadow(Hit &hit, Vector3 lightDir) {
 	Ray shadowFeeler(hit.Location, lightDir);
 	
-	for (auto obj : scene->GetObjects()) {
+	for (auto obj : scene->getObjects()) {
 		Hit shadowHit = obj->CalculateIntersection(shadowFeeler);
+
 		if (shadowHit.HasCollided) 
-			return true;
+			if ((lightDir - hit.Location).quadrance() > shadowHit.T * shadowHit.T) //ignore objects behind the light
+				return true;
+		
 	}
 	return false;
 }
-double clamp(double x, double upper, double lower)
-{
+double clamp(double x, double upper, double lower){
 	return std::min(upper, std::max(x, lower));
 }
-double calculateClossestHit(Ray ray, double Tmin, Hit &hit)
-{
-	for (auto obj : scene->GetObjects()) {
+
+Hit calculateClossestHit(Ray ray){
+	double Tmin = DBL_MAX;
+	Hit hit;
+	for (auto obj : scene->getObjects()) {
 		Hit tempHit = obj->CalculateIntersection(ray);
 		if ((tempHit.HasCollided && tempHit.T < Tmin)) {
 			Tmin = tempHit.T;
 			hit = tempHit;
 			hit.Mat = obj->material;
 		}
-	}	return Tmin;
+	}	return hit;
 }
 
-Ray calculateReflectedRay(Hit hit, Vector3 ViewDir)
-{
-	//Vector3 ViewDir = (scene->GetCamera()->Eye - hit.Location).normalize();
+Ray calculateReflectedRay(Hit hit, Vector3 ViewDir) {
 	Vector3 rr = 2 * (ViewDir * hit.Normal)*hit.Normal - ViewDir;
-	if (rr == Vector3(0, 0, 0))
-		std::cout << "merda";
 	return Ray(hit.Location, rr);
 }
 
@@ -116,10 +115,7 @@ Ray calculateRefractedRay(Hit hit, Ray ray, Material mat, float RefractionIndex)
 	}
 	else
 		return Ray(hit.Location, eta * (I) + (eta * NdotI - sqrtf(k))*Nrefr);
-	
-
-	
-	
+		
 }
 
 ///////////////////////////////////////////////////////////////////////  RAY-TRACE SCENE
@@ -128,80 +124,68 @@ Ray calculateRefractedRay(Hit hit, Ray ray, Material mat, float RefractionIndex)
 
 Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 {	
-	Hit hit;
-	double Tmin = DBL_MAX;
-
-	Tmin = calculateClossestHit(ray, Tmin, hit);
-
+	Hit hit = calculateClossestHit(ray);
 
 	if (!hit.HasCollided) 
 		return scene->backgroundColor;
-	else {
-		Vector3 viewDir;
-		Vector3 normal(hit.Normal);
-		Material mat = hit.Mat;
-		Vector3 color = mat.color * 0; // ambient color
-		Vector3 difColor, specColor;
-		Vector3 rColor = scene->backgroundColor;
+	
+	Vector3 viewDir;
+	Material mat = hit.Mat;
+	Vector3 color = mat.color * 0; // ambient color
+	Vector3 difColor, specColor;
+	Vector3 rColor = scene->backgroundColor;
 
-		for (auto light : scene->getLights()) {
-			Vector3 lightDir = (light->Position - hit.Location).normalize();
+	for (auto light : scene->getLights()) {
+		Vector3 lightDir = (light->Position - hit.Location).normalize();
 
-			if(isPointInShadow(hit, lightDir)) 
-				continue; // this light doesn't contribute for this point
+		if(isPointInShadow(hit, lightDir)) 
+			continue; // this light doesn't contribute for this point
 
-			float lambertian = std::fmax(lightDir * normal, 0.0f);
-			float specular = 0;
+		float lambertian = std::fmax(lightDir * hit.Normal, 0.0f);
+		float specular = 0;
 
-			if (lambertian > 0.0f) {
-				//viewDir = (ray.Direction).normalize();
-				viewDir = (scene->GetCamera()->Eye - hit.Location).normalize();
-				Vector3 Rr = 2 * (viewDir * hit.Normal)*hit.Normal - viewDir;
-				float specAngle = std::fmax(Rr * lightDir, 0.0f);
-				specular = pow(specAngle, mat.shininess);
+		if (lambertian > 0.0f) {
+			viewDir = (-ray.Direction).normalize();
+			Vector3 Rr = 2 * (viewDir * hit.Normal)*hit.Normal - viewDir;
+			float specAngle = std::fmax(Rr * lightDir, 0.0f);
+			specular = pow(specAngle, mat.shininess);
 
 				
-				float KdLamb = mat.Kd * lambertian;
-				difColor.r() += mat.color.r() * light->Color.r() * KdLamb;
-				difColor.g() += mat.color.g() * light->Color.g() * KdLamb;
-				difColor.b() += mat.color.b() * light->Color.b() * KdLamb;
+			float KdLamb = mat.Kd * lambertian; 
+			difColor.r() += mat.color.r() * light->Color.r() * KdLamb;
+			difColor.g() += mat.color.g() * light->Color.g() * KdLamb;
+			difColor.b() += mat.color.b() * light->Color.b() * KdLamb;
 
-				float ksSpec = mat.Ks * specular;
-				specColor.r() += mat.color.r() * light->Color.r() * ksSpec;
-				specColor.g() += mat.color.g() * light->Color.g() * ksSpec;
-				specColor.b() += mat.color.b() * light->Color.b() * ksSpec;
-				
-				
-			}
+			float ksSpec = mat.Ks * specular;
+			specColor.r() += mat.color.r() * light->Color.r() * ksSpec;
+			specColor.g() += mat.color.g() * light->Color.g() * ksSpec;
+			specColor.b() += mat.color.b() * light->Color.b() * ksSpec;
+		}
 			
-		}
-
-		color += difColor + specColor;
-
-		if (depth >= MAX_DEPTH) 
-			return color;
-		
- 		Ray reflected = calculateReflectedRay(hit, -ray.Direction);
- 		rColor = rayTracing(reflected, depth + 1, RefrIndex);
-		color += mat.Ks*rColor;
-
-		//translucid
-		//ray = calculate ray in refracted direction;
-		if(mat.isTranslucid){
- 			Ray refracted = calculateRefractedRay(hit, ray, mat, RefrIndex);
-			if (refracted.Direction != Vector3(0, 0, 0)) {
-				Vector3 refrColor = rayTracing(refracted, depth + 1, RefrIndex);
-				color += mat.T * refrColor;
-			}
- 	
-		}
-		//tColor = trace(ray,depth+1, index)
-		//color += mat.t*tColor
-
-
-		return color;
 	}
-	return scene->backgroundColor;
+
+	color += difColor + specColor;
+
+	if (depth >= MAX_DEPTH) 
+		return color;
+		
+ 	Ray reflected = calculateReflectedRay(hit, -ray.Direction);
+ 	rColor = rayTracing(reflected, depth + 1, RefrIndex);
+	color += mat.Ks*rColor;
+
+	//translucid
+	//ray = calculate ray in refracted direction;
+	if(mat.isTranslucid){
+ 		Ray refracted = calculateRefractedRay(hit, ray, mat, RefrIndex);
+		if (refracted.Direction != Vector3(0, 0, 0)) {
+			Vector3 refrColor = rayTracing(refracted, depth + 1, RefrIndex);
+			color += mat.T * refrColor;
+		}
+ 	
+	}
+
+	return color;
+
 }
 
 /////////////////////////////////////////////////////////////////////// ERRORS
@@ -372,7 +356,7 @@ void renderScene()
 		
 		   // YOUR 2 FUNTIONS: 
 			
-			Ray ray = scene->GetCamera()->CalculatePrimaryRay(x, y);
+			Ray ray = scene->getCamera()->CalculatePrimaryRay(x, y);
 			Vector3 color = rayTracing(ray, 1, 1.0 );
 
 			vertices[index_pos++]= (float)x;
@@ -493,14 +477,14 @@ int main(int argc, char* argv[])
 {
     //INSERT HERE YOUR CODE FOR PARSING NFF FILES
 	scene = new Scene();
-	if (!(scene->load_nff("balls_medium.nff"))) {
+	if (!(scene->loadNFF("mount_low.nff"))) {
 		std::cout << "Failed to load scene" << std::endl;
 		std::cin.get();
 		return 0;
 	}
-	RES_X = scene->GetCamera()->GetResX();
-	RES_Y = scene->GetCamera()->GetResY();
-	scene->GetCamera()->CalculateOtherStuff();
+	RES_X = scene->getCamera()->GetResX();
+	RES_Y = scene->getCamera()->GetResY();
+	scene->getCamera()->CalculateOtherStuff();
 
 	if(draw_mode == 0) { // desenhar o conteúdo da janela ponto a ponto
 		size_vertices = 2*sizeof(float);
