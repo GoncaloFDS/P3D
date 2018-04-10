@@ -3,6 +3,7 @@
 #include "../../Sphere.h"
 #include "../../Plane.h"
 #include "../../Triangle.h"
+#include "../../AreaLight.h"
 
 
 Scene::Scene()
@@ -138,7 +139,6 @@ void Scene::parsePolygon(std::stringstream& in, std::ifstream& file) {
 	int n;
 	Vector3 verts[3];
 	in >> n;
-	std::cout << "Triangle vertices's count: " << n << std::endl;
 	if (n != 3) 
 		throw std::runtime_error("Parsing polygons that aren't triangles is not supported");
 	
@@ -152,40 +152,47 @@ void Scene::parsePolygon(std::stringstream& in, std::ifstream& file) {
 	Triangle* triangle = new Triangle(verts[0], verts[1], verts[2]);
 	triangle->material = materials.back();
 	objects.push_back(triangle);
-	std::cout << "Triangle p1-> " << triangle->Vert1 << " p2-> " << triangle->Vert2 << " p3-> " << triangle->Vert3 << std::endl;
-
 }
 
 void Scene::ParseLine(std::stringstream& in, std::ifstream& file)
 {
-		std::string s;
-		in >> s;
-		if (s == "b") //backgroundColor
-			parseBackgroundColor(in);
-		else if (s == "from")
-			parseFrom(in);
-		else if (s == "at")
-			parseAt(in);
-		else if (s == "up")
-			parseUp(in);
-		else if (s == "angle")
-			parseAngle(in);
-		else if (s == "hither")
-			parseHither(in);
-		else if (s == "resolution")
-			parseResolution(in);
-		else if (s == "l") //LightPosition
-			parseLightPosition(in);
-		else if (s == "f")
-			parseObjectMaterials(in); //Object Materials
-		else if (s == "c") //cone primitive
-			parseCone(in);
-		else if (s == "s")
-			parseSphere(in); // sphere primitive
-		else if (s == "pl")
-			parsePlane(in); // infinite plane
-		else if (s == "p")
-			parsePolygon(in, file); // poligon
+	std::string s;
+	in >> s;
+	if (s == "b") //backgroundColor
+		parseBackgroundColor(in);
+	else if (s == "from")
+		parseFrom(in);
+	else if (s == "at")
+		parseAt(in);
+	else if (s == "up")
+		parseUp(in);
+	else if (s == "angle")
+		parseAngle(in);
+	else if (s == "hither")
+		parseHither(in);
+	else if (s == "resolution")
+		parseResolution(in);
+	else if (s == "l") //LightPosition
+		parseLightPosition(in);
+	else if (s == "f")
+		parseObjectMaterials(in); //Object Materials
+	else if (s == "c") //cone primitive
+		parseCone(in);
+	else if (s == "s")
+		parseSphere(in); // sphere primitive
+	else if (s == "pl")
+		parsePlane(in); // infinite plane
+	else if (s == "p")
+		parsePolygon(in, file); // polygon
+	else if (s == "al")
+		ParseAreaLight(in);
+}
+
+void Scene::ParseAreaLight(std::stringstream& in) {
+	//Vector3 v1, v2, v3;
+	//in >> v1 >> v2 >> v3;
+	//areaLight = new AreaLight(v1, v2, v3);
+	//std::cout << "Area Light c: " << areaLight->c << " a: " << areaLight->a << " b: " << areaLight->b;
 }
 
 std::vector<PointLight*> Scene::getLights()

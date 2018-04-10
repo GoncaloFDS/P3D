@@ -22,8 +22,8 @@ float Camera::GetResY()
 
 Ray Camera::CalculatePrimaryRay(int x, int y)
 {
-	float ux = ((x +0.5)/ GetResX())*Width;
-	float vy = ((y+0.5) / GetResY())*Height;
+	float ux = ((x)/ GetResX())*Width;
+	float vy = ((y) / GetResY())*Height;
 
 	Vector3 eyeAt = (Eye - At);
 	float df = (eyeAt).magnitude();

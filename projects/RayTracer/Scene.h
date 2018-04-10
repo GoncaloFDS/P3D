@@ -12,6 +12,7 @@
 #include "../../Material.h"
 #include "../../SceneObject.h"
 #include "../../Sphere.h"
+#include "../../AreaLight.h"
 
 class Scene
 {
@@ -27,6 +28,7 @@ public:
 private:
 	Camera *camera;
 	std::vector<PointLight*> lightPoints;
+	AreaLight *areaLight;
 	std::vector<SceneObject*> objects;
 	std::vector<Material> materials;
 	std::ifstream fileScene;
@@ -40,11 +42,12 @@ private:
 	void parseResolution(std::stringstream& in);
 	void parseLightPosition( std::stringstream& in);
 	void parseObjectMaterials( std::stringstream& in);
-	void parseCone( std::stringstream& in);
-	void parseSphere( std::stringstream& in);
-	void parsePlane( std::stringstream& in);
+	void parseCone(std::stringstream& in);
+	void parseSphere(std::stringstream& in);
+	void parsePlane(std::stringstream& in);
 	void parsePolygon(std::stringstream& in, std::ifstream& file);
 	void ParseLine(std::stringstream& in, std::ifstream& file);
+	void ParseAreaLight(std::stringstream& in);
 
 };
 

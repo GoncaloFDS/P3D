@@ -27,7 +27,7 @@
 #define VERTEX_COORD_ATTRIB 0
 #define COLOR_ATTRIB 1
 
-#define MAX_DEPTH 6
+#define MAX_DEPTH 4
 
 // Points defined by 2 attributes: positions which are stored in vertices array and colors which are stored in colors array
 float *colors;
@@ -92,7 +92,7 @@ Ray calculateReflectedRay(Hit hit, Vector3 ViewDir) {
 }
 
 Ray calculateRefractedRay(Hit hit, Ray ray, Material mat, float RefractionIndex) {
-	Vector3 Nrefr = hit.Normal.normalize();;
+	Vector3 Nrefr = hit.Normal.normalize();
 	Vector3 I = (hit.Location - ray.Origin).normalize();
 	//Vector3 I = -ray.Direction;
 	float NdotI = Nrefr * I;
@@ -347,28 +347,35 @@ void renderScene()
 {
 	int index_pos=0;
 	int index_col=0;
-
+	int nSamples = 6;
+	int nSquared = nSamples * nSamples;
 
 	for (int y = 0; y < RES_Y; y++)
 	{
 		for (int x = 0; x < RES_X; x++)
-		{
-		
-		   // YOUR 2 FUNTIONS: 
-			
-			Ray ray = scene->getCamera()->CalculatePrimaryRay(x, y);
-			Vector3 color = rayTracing(ray, 1, 1.0 );
+		{	
+			Vector3 c = Vector3(0, 0, 0);
+			for (int p = 0; p < nSamples; p++) {
+				for (int q = 0; q < nSamples; q++) {
+					float pEps = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+					float qEps = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+					Ray ray = scene->getCamera()->CalculatePrimaryRay(x + (p + pEps)/nSamples, y + (q + qEps) / nSamples);
+					c += rayTracing(ray, 1, 1.0);
 
-			vertices[index_pos++]= (float)x;
-			vertices[index_pos++]= (float)y;
-			colors[index_col++]= color.r();
-			colors[index_col++]= color.g();
-			colors[index_col++]= color.b();	
+					
+				}		  
+			}
+			Vector3 color = c / nSquared;
+			vertices[index_pos++] = (float)x;
+			vertices[index_pos++] = (float)y;
+			colors[index_col++] = color.r();
+			colors[index_col++] = color.g();
+			colors[index_col++] = color.b();
 
-			if(draw_mode == 0) {  // desenhar o conteúdo da janela ponto a ponto
+			if (draw_mode == 0) {  // desenhar o conteúdo da janela ponto a ponto
 				drawPoints();
-				index_pos=0;
-				index_col=0;
+				index_pos = 0;
+				index_col = 0;
 			}
 		}
 		printf("line %d", y);
@@ -477,7 +484,7 @@ int main(int argc, char* argv[])
 {
     //INSERT HERE YOUR CODE FOR PARSING NFF FILES
 	scene = new Scene();
-	if (!(scene->loadNFF("mount_low.nff"))) {
+	if (!(scene->loadNFF("balls_low.nff"))) {
 		std::cout << "Failed to load scene" << std::endl;
 		std::cin.get();
 		return 0;

@@ -160,6 +160,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AreaLight.cpp" />
     <ClCompile Include="Hit.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Plane.cpp" />
@@ -173,6 +174,7 @@
     <ClCompile Include="Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AreaLight.h" />
     <ClInclude Include="Hit.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Plane.h" />
