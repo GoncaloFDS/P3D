@@ -134,8 +134,11 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 	Vector3 difColor, specColor;
 	Vector3 rColor = scene->backgroundColor;
 	Vector3 lColor(0, 0, 0);
+	Vector3 sum(0, 0, 0);
 
 	for (auto light : scene->getLights()) {
+		difColor = Vector3(0, 0, 0);
+		specColor = Vector3(0, 0, 0);
 		for (int i = 0; i < light->GetSampleSize(); i++) {
 			
 			Vector3 lightDir = (light->GetPoint() - hit.Location).normalize();
@@ -152,8 +155,8 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 				float specAngle = std::fmax(Rr * lightDir, 0.0f);
 				specular = pow(specAngle, mat.shininess);
 
-				
-				float KdLamb = mat.Kd * lambertian; 
+
+				float KdLamb = mat.Kd * lambertian;
 				difColor.r() += mat.color.r() * light->GetColor().r() * KdLamb;
 				difColor.g() += mat.color.g() * light->GetColor().g() * KdLamb;
 				difColor.b() += mat.color.b() * light->GetColor().b() * KdLamb;
@@ -163,17 +166,15 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 				specColor.g() += mat.color.g() * light->GetColor().g() * ksSpec;
 				specColor.b() += mat.color.b() * light->GetColor().b() * ksSpec;
 
-				
+
 
 			}
-
-			lColor += difColor + specColor;
-			lColor = lColor / light->GetSampleSize();
 		}
-			
+		sum += (difColor + specColor) / light->GetSampleSize();
+
 	}
 
-	color += lColor;
+	color += sum;
 
 	if (depth >= MAX_DEPTH) 
 		return color;
