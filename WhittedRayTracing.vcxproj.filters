@@ -39,9 +39,6 @@
     <ClCompile Include="projects\RayTracer\Plane.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="projects\RayTracer\PointLight.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="projects\RayTracer\Ray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -52,6 +49,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="projects\RayTracer\Triangle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="projects\RayTracer\Light.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -77,9 +77,6 @@
     <ClInclude Include="projects\RayTracer\Plane.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="projects\RayTracer\PointLight.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="projects\RayTracer\Ray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -90,6 +87,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="projects\RayTracer\Triangle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\RayTracer\Light.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

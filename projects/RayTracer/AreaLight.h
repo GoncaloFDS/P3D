@@ -1,14 +1,18 @@
 #pragma once
 #include "Vector3.h"
+#include "Light.h"
 
-class AreaLight {
+class AreaLight : public Light{
 public:
 	AreaLight();
-	AreaLight(Vector3 v1, Vector3 v2, Vector3 v3) : c(v1), a(v2), b(v3) {};
-	~AreaLight();
+	AreaLight(Vector3 pos, Vector3 v2, Vector3 v3, Vector3 color, int SampleSize)
+		: Light(pos, color, SampleSize), Va(v2), Vb(v3) {};
+	~AreaLight() = default;
 
-	Vector3 c, a, b;
+	Vector3 GetPoint();
+
+protected:
+	Vector3 Va, Vb;
 	
-	Vector3 getRandomPoint();
 };
 

@@ -1,7 +1,7 @@
 #pragma once
 #include "Vector3.h"
 
-class PointLight
+class PointLight 
 {
 public:
 	PointLight();

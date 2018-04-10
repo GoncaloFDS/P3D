@@ -4,6 +4,7 @@
 #include "Plane.h"
 #include "Triangle.h"
 #include "AreaLight.h"
+#include "Light.h"
 
 
 Scene::Scene()
@@ -83,15 +84,13 @@ void Scene::parseResolution(std::stringstream& in)
 	std::cout << "Res: " << camera->Resolution << std::endl;
 }
 
-void Scene::parseLightPosition(std::stringstream& in)
-{
-	auto *light = new PointLight();
-	in >> light->Position;
-	Vector3 color;
+void Scene::parseLight(std::stringstream& in) {
+	Vector3 pos, color;
+	in >> pos;
 	in >> color;
-	light->Color = color;
-	lightPoints.push_back(light);
-	std::cout << "Light position: " << light->Position << std::endl;
+	auto *light = new Light(pos, color);
+	LightVector.push_back(light);
+	std::cout << "Light position: " << light->GetPoint() << std::endl;
 }
 
 void Scene::parseObjectMaterials(std::stringstream& in)
@@ -108,7 +107,7 @@ void Scene::parseObjectMaterials(std::stringstream& in)
 		material.isTranslucid = true;
 	in >> material.refractionIndex;	
 	std::cout << "Refraction index: " << material.refractionIndex << std::endl;
-	std::cout << "Material transmitance: " << material.T << std::endl;
+	std::cout << "Material transmittance: " << material.T << std::endl;
 	materials.push_back(material);
 }
 
@@ -173,7 +172,7 @@ void Scene::ParseLine(std::stringstream& in, std::ifstream& file)
 	else if (s == "resolution")
 		parseResolution(in);
 	else if (s == "l") //LightPosition
-		parseLightPosition(in);
+		parseLight(in);
 	else if (s == "f")
 		parseObjectMaterials(in); //Object Materials
 	else if (s == "c") //cone primitive
@@ -189,13 +188,13 @@ void Scene::ParseLine(std::stringstream& in, std::ifstream& file)
 }
 
 void Scene::ParseAreaLight(std::stringstream& in) {
-	//Vector3 v1, v2, v3;
-	//in >> v1 >> v2 >> v3;
-	//areaLight = new AreaLight(v1, v2, v3);
+	Vector3 pos, va, vb, color;
+	in >> pos >> va >> vb >> color;
+	areaLight = new AreaLight(pos, va, vb, color, 5);
 	//std::cout << "Area Light c: " << areaLight->c << " a: " << areaLight->a << " b: " << areaLight->b;
 }
 
-std::vector<PointLight*> Scene::getLights()
+std::vector<Light*> Scene::getLights()
 {
-	return lightPoints;
+	return LightVector;
 }

@@ -7,7 +7,7 @@
 #include <vector>
 #include "Camera.h"
 #include "Vector3.h"
-#include "PointLight.h"
+#include "Light.h"
 #include "Material.h"
 #include "SceneObject.h"
 #include "Sphere.h"
@@ -21,12 +21,12 @@ public:
 	std::vector<SceneObject*> getObjects();
 	bool loadNFF(std::string filepath);
 	Camera* getCamera();
-	std::vector<PointLight*> getLights();
+	std::vector<Light*> getLights();
 	Vector3 backgroundColor;
 
 private:
 	Camera *camera;
-	std::vector<PointLight*> lightPoints;
+	std::vector<Light*> LightVector;
 	AreaLight *areaLight;
 	std::vector<SceneObject*> objects;
 	std::vector<Material> materials;
@@ -39,7 +39,7 @@ private:
 	void parseAngle(std::stringstream& in);
 	void parseHither(std::stringstream& in);
 	void parseResolution(std::stringstream& in);
-	void parseLightPosition( std::stringstream& in);
+	void parseLight( std::stringstream& in);
 	void parseObjectMaterials( std::stringstream& in);
 	void parseCone(std::stringstream& in);
 	void parseSphere(std::stringstream& in);

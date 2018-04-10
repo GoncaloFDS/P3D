@@ -1,18 +1,7 @@
 #include "AreaLight.h"
 
-
-
-AreaLight::AreaLight()
-{
-}
-
-
-AreaLight::~AreaLight()
-{
-}
-
-Vector3 AreaLight::getRandomPoint() {
+Vector3 AreaLight::GetPoint() {
 	float pEps = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 	float qEps = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-	return c + pEps * a + qEps * b;
+	return Position + pEps * Va + qEps * Vb;
 }

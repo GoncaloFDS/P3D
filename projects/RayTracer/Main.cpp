@@ -133,37 +133,46 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 	Vector3 color = mat.color * 0; // ambient color
 	Vector3 difColor, specColor;
 	Vector3 rColor = scene->backgroundColor;
+	Vector3 lColor(0, 0, 0);
 
 	for (auto light : scene->getLights()) {
-		Vector3 lightDir = (light->Position - hit.Location).normalize();
+		for (int i = 0; i < light->GetSampleSize(); i++) {
+			
+			Vector3 lightDir = (light->GetPoint() - hit.Location).normalize();
 
-		if(isPointInShadow(hit, lightDir)) 
-			continue; // this light doesn't contribute for this point
+			if(isPointInShadow(hit, lightDir)) 
+				continue; // this light doesn't contribute for this point
 
-		float lambertian = std::fmax(lightDir * hit.Normal, 0.0f);
-		float specular = 0;
+			float lambertian = std::fmax(lightDir * hit.Normal, 0.0f);
+			float specular = 0;
 
-		if (lambertian > 0.0f) {
-			viewDir = (-ray.Direction).normalize();
-			Vector3 Rr = 2 * (viewDir * hit.Normal)*hit.Normal - viewDir;
-			float specAngle = std::fmax(Rr * lightDir, 0.0f);
-			specular = pow(specAngle, mat.shininess);
+			if (lambertian > 0.0f) {
+				viewDir = (-ray.Direction).normalize();
+				Vector3 Rr = 2 * (viewDir * hit.Normal)*hit.Normal - viewDir;
+				float specAngle = std::fmax(Rr * lightDir, 0.0f);
+				specular = pow(specAngle, mat.shininess);
 
 				
-			float KdLamb = mat.Kd * lambertian; 
-			difColor.r() += mat.color.r() * light->Color.r() * KdLamb;
-			difColor.g() += mat.color.g() * light->Color.g() * KdLamb;
-			difColor.b() += mat.color.b() * light->Color.b() * KdLamb;
+				float KdLamb = mat.Kd * lambertian; 
+				difColor.r() += mat.color.r() * light->GetColor().r() * KdLamb;
+				difColor.g() += mat.color.g() * light->GetColor().g() * KdLamb;
+				difColor.b() += mat.color.b() * light->GetColor().b() * KdLamb;
 
-			float ksSpec = mat.Ks * specular;
-			specColor.r() += mat.color.r() * light->Color.r() * ksSpec;
-			specColor.g() += mat.color.g() * light->Color.g() * ksSpec;
-			specColor.b() += mat.color.b() * light->Color.b() * ksSpec;
+				float ksSpec = mat.Ks * specular;
+				specColor.r() += mat.color.r() * light->GetColor().r() * ksSpec;
+				specColor.g() += mat.color.g() * light->GetColor().g() * ksSpec;
+				specColor.b() += mat.color.b() * light->GetColor().b() * ksSpec;
+
+				
+
+			}
+			lColor = difColor + specColor;
+			lColor = lColor / light->GetSampleSize();
 		}
 			
 	}
 
-	color += difColor + specColor;
+	color += lColor;
 
 	if (depth >= MAX_DEPTH) 
 		return color;
