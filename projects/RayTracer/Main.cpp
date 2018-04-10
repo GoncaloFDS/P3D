@@ -18,9 +18,8 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include "stdlib.h"
-#include "Color.h"
 #include "Scene.h"
-#include "../../Ray.h"
+#include "Ray.h"
 #include <cstdlib>
 #define CAPTION "ray tracer"
 

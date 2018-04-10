@@ -160,32 +160,32 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AreaLight.cpp" />
-    <ClCompile Include="Hit.cpp" />
-    <ClCompile Include="Material.cpp" />
-    <ClCompile Include="Plane.cpp" />
-    <ClCompile Include="PointLight.cpp" />
+    <ClCompile Include="projects\RayTracer\AreaLight.cpp" />
     <ClCompile Include="projects\RayTracer\Camera.cpp" />
+    <ClCompile Include="projects\RayTracer\Hit.cpp" />
     <ClCompile Include="projects\RayTracer\Main.cpp" />
+    <ClCompile Include="projects\RayTracer\Material.cpp" />
+    <ClCompile Include="projects\RayTracer\Plane.cpp" />
+    <ClCompile Include="projects\RayTracer\PointLight.cpp" />
+    <ClCompile Include="projects\RayTracer\Ray.cpp" />
     <ClCompile Include="projects\RayTracer\Scene.cpp" />
-    <ClCompile Include="Ray.cpp" />
-    <ClCompile Include="SceneObject.cpp" />
-    <ClCompile Include="Sphere.cpp" />
-    <ClCompile Include="Triangle.cpp" />
+    <ClCompile Include="projects\RayTracer\SceneObject.cpp" />
+    <ClCompile Include="projects\RayTracer\Sphere.cpp" />
+    <ClCompile Include="projects\RayTracer\Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AreaLight.h" />
-    <ClInclude Include="Hit.h" />
-    <ClInclude Include="Material.h" />
-    <ClInclude Include="Plane.h" />
-    <ClInclude Include="PointLight.h" />
+    <ClInclude Include="projects\RayTracer\AreaLight.h" />
     <ClInclude Include="projects\RayTracer\Camera.h" />
+    <ClInclude Include="projects\RayTracer\Hit.h" />
+    <ClInclude Include="projects\RayTracer\Material.h" />
+    <ClInclude Include="projects\RayTracer\Plane.h" />
+    <ClInclude Include="projects\RayTracer\PointLight.h" />
+    <ClInclude Include="projects\RayTracer\Ray.h" />
     <ClInclude Include="projects\RayTracer\Scene.h" />
+    <ClInclude Include="projects\RayTracer\SceneObject.h" />
+    <ClInclude Include="projects\RayTracer\Sphere.h" />
     <ClInclude Include="projects\RayTracer\targetver.h" />
-    <ClInclude Include="Ray.h" />
-    <ClInclude Include="SceneObject.h" />
-    <ClInclude Include="Sphere.h" />
-    <ClInclude Include="Triangle.h" />
+    <ClInclude Include="projects\RayTracer\Triangle.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="dependencies\Math\Math.vcxproj">

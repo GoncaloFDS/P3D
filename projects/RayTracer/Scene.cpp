@@ -1,9 +1,9 @@
 #include "Scene.h"
-#include "../../Material.h"
-#include "../../Sphere.h"
-#include "../../Plane.h"
-#include "../../Triangle.h"
-#include "../../AreaLight.h"
+#include "Material.h"
+#include "Sphere.h"
+#include "Plane.h"
+#include "Triangle.h"
+#include "AreaLight.h"
 
 
 Scene::Scene()

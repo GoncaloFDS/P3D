@@ -209,3 +209,5 @@ _Pvt_Extensions
 intermediaries/
 
 bin/x64/Debug/WhittedRayTracing\.exe
+
+dependencies/Math/lib/Math\.lib

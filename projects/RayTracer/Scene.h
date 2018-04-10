@@ -1,18 +1,17 @@
 #pragma once
 #include <string>
-#include "Color.h"
-#include "Vector3.h"
 #include <sstream>
 #include <istream>
 #include <iostream>
 #include <fstream>
-#include "Camera.h"
 #include <vector>
-#include "../../PointLight.h"
-#include "../../Material.h"
-#include "../../SceneObject.h"
-#include "../../Sphere.h"
-#include "../../AreaLight.h"
+#include "Camera.h"
+#include "Vector3.h"
+#include "PointLight.h"
+#include "Material.h"
+#include "SceneObject.h"
+#include "Sphere.h"
+#include "AreaLight.h"
 
 class Scene
 {

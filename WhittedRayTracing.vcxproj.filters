@@ -27,31 +27,31 @@
     <ClCompile Include="projects\RayTracer\Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Ray.cpp">
+    <ClCompile Include="projects\RayTracer\AreaLight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Material.cpp">
+    <ClCompile Include="projects\RayTracer\Hit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sphere.cpp">
+    <ClCompile Include="projects\RayTracer\Material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SceneObject.cpp">
+    <ClCompile Include="projects\RayTracer\Plane.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Hit.cpp">
+    <ClCompile Include="projects\RayTracer\PointLight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Plane.cpp">
+    <ClCompile Include="projects\RayTracer\Ray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PointLight.cpp">
+    <ClCompile Include="projects\RayTracer\SceneObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Triangle.cpp">
+    <ClCompile Include="projects\RayTracer\Sphere.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AreaLight.cpp">
+    <ClCompile Include="projects\RayTracer\Triangle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -65,31 +65,31 @@
     <ClInclude Include="projects\RayTracer\Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Ray.h">
+    <ClInclude Include="projects\RayTracer\AreaLight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Material.h">
+    <ClInclude Include="projects\RayTracer\Hit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sphere.h">
+    <ClInclude Include="projects\RayTracer\Material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SceneObject.h">
+    <ClInclude Include="projects\RayTracer\Plane.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hit.h">
+    <ClInclude Include="projects\RayTracer\PointLight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Plane.h">
+    <ClInclude Include="projects\RayTracer\Ray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PointLight.h">
+    <ClInclude Include="projects\RayTracer\SceneObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Triangle.h">
+    <ClInclude Include="projects\RayTracer\Sphere.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AreaLight.h">
+    <ClInclude Include="projects\RayTracer\Triangle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
