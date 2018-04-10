@@ -166,7 +166,8 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 				
 
 			}
-			lColor = difColor + specColor;
+
+			lColor += difColor + specColor;
 			lColor = lColor / light->GetSampleSize();
 		}
 			
@@ -492,7 +493,7 @@ int main(int argc, char* argv[])
 {
     //INSERT HERE YOUR CODE FOR PARSING NFF FILES
 	scene = new Scene();
-	if (!(scene->loadNFF("balls_low.nff"))) {
+	if (!(scene->loadNFF("random_balls.nff"))) {
 		std::cout << "Failed to load scene" << std::endl;
 		std::cin.get();
 		return 0;

@@ -191,6 +191,7 @@ void Scene::ParseAreaLight(std::stringstream& in) {
 	Vector3 pos, va, vb, color;
 	in >> pos >> va >> vb >> color;
 	areaLight = new AreaLight(pos, va, vb, color, 5);
+	LightVector.push_back(areaLight);
 	//std::cout << "Area Light c: " << areaLight->c << " a: " << areaLight->a << " b: " << areaLight->b;
 }
 
