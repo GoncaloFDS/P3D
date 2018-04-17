@@ -171,6 +171,7 @@
     <ClCompile Include="projects\RayTracer\Scene.cpp" />
     <ClCompile Include="projects\RayTracer\SceneObject.cpp" />
     <ClCompile Include="projects\RayTracer\Sphere.cpp" />
+    <ClCompile Include="projects\RayTracer\ThinLens.cpp" />
     <ClCompile Include="projects\RayTracer\Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -185,6 +186,7 @@
     <ClInclude Include="projects\RayTracer\SceneObject.h" />
     <ClInclude Include="projects\RayTracer\Sphere.h" />
     <ClInclude Include="projects\RayTracer\targetver.h" />
+    <ClInclude Include="projects\RayTracer\ThinLens.h" />
     <ClInclude Include="projects\RayTracer\Triangle.h" />
   </ItemGroup>
   <ItemGroup>

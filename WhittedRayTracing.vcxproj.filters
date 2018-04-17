@@ -54,6 +54,9 @@
     <ClCompile Include="projects\RayTracer\Light.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="projects\RayTracer\ThinLens.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="projects\RayTracer\targetver.h">
@@ -90,6 +93,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="projects\RayTracer\Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\RayTracer\ThinLens.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

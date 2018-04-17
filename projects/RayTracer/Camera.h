@@ -21,7 +21,7 @@ public:
 	float Width;
 	float Height;
 	Vector3 Xe, Ye, Ze;
-	Ray CalculatePrimaryRay(int x, int y);
+	virtual Ray CalculatePrimaryRay(int x, int y);
 	void CalculateOtherStuff();
 };
 

@@ -357,7 +357,7 @@ void renderScene()
 {
 	int index_pos=0;
 	int index_col=0;
-	int nSamples = 6;
+	int nSamples = 4;
 	int nSquared = nSamples * nSamples;
 
 	for (int y = 0; y < RES_Y; y++)
@@ -365,17 +365,20 @@ void renderScene()
 		for (int x = 0; x < RES_X; x++)
 		{	
 			Vector3 c = Vector3(0, 0, 0);
-			for (int p = 0; p < nSamples; p++) {
-				for (int q = 0; q < nSamples; q++) {
+			//for (int p = 0; p < nSamples; p++) {
+				//for (int q = 0; q < nSamples; q++) {
 					float pEps = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 					float qEps = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-					Ray ray = scene->getCamera()->CalculatePrimaryRay(x + (p + pEps)/nSamples, y + (q + qEps) / nSamples);
-					c += rayTracing(ray, 1, 1.0);
+					for (int n = 0; n < nSquared; n++) {
+						//Ray ray = scene->getCamera()->CalculatePrimaryRay(x + (p + pEps) / nSamples, y + (q + qEps) / nSamples);
+						Ray ray = scene->getCamera()->CalculatePrimaryRay(x , y);
+						c += rayTracing(ray, 1, 1.0);
+					}
 
 					
-				}		  
-			}
-			Vector3 color = c / nSquared;
+				//}		  
+			//}
+			Vector3 color = c / (nSquared);
 			vertices[index_pos++] = (float)x;
 			vertices[index_pos++] = (float)y;
 			colors[index_col++] = color.r();

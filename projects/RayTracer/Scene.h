@@ -47,6 +47,6 @@ private:
 	void parsePolygon(std::stringstream& in, std::ifstream& file);
 	void ParseLine(std::stringstream& in, std::ifstream& file);
 	void ParseAreaLight(std::stringstream& in);
-
+	void ParseLensRadius(std::stringstream& in);
 };
 

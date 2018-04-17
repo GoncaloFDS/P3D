@@ -5,11 +5,11 @@
 #include "Triangle.h"
 #include "AreaLight.h"
 #include "Light.h"
-
+#include "ThinLens.h"
 
 Scene::Scene()
 {
-	camera = new Camera();
+	camera = new ThinLens();
 }
 
 
@@ -75,8 +75,12 @@ void Scene::parseAngle(std::stringstream& in)
 void Scene::parseHither(std::stringstream& in)
 {
 	in >> camera->Near;
+	static_cast<ThinLens*>(camera)->d = camera->Near;
+	static_cast<ThinLens*>(camera)->f = (camera->Eye - camera->At).magnitude();
 	std::cout << "Hither: " << camera->Near << std::endl;
 	camera->Far = 1000 * camera->Near;
+	
+
 }
 void Scene::parseResolution(std::stringstream& in)
 {
@@ -185,6 +189,8 @@ void Scene::ParseLine(std::stringstream& in, std::ifstream& file)
 		parsePolygon(in, file); // polygon
 	else if (s == "al")
 		ParseAreaLight(in);
+	else if (s == "lensRadius")
+		ParseLensRadius(in);
 }
 
 void Scene::ParseAreaLight(std::stringstream& in) {
@@ -193,6 +199,12 @@ void Scene::ParseAreaLight(std::stringstream& in) {
 	areaLight = new AreaLight(pos, va, vb, color, 10);
 	LightVector.push_back(areaLight);
 	//std::cout << "Area Light c: " << areaLight->c << " a: " << areaLight->a << " b: " << areaLight->b;
+}
+
+void Scene::ParseLensRadius(std::stringstream & in)
+{
+	float radius;
+	in >> (static_cast<ThinLens*>(camera))->radius;
 }
 
 std::vector<Light*> Scene::getLights()
