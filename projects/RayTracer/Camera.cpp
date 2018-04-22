@@ -1,15 +1,5 @@
 #include "Camera.h"
 
-
-Camera::Camera()
-{
-}
-
-
-Camera::~Camera()
-{
-}
-
 float Camera::GetResX()
 {
 	return Resolution.coordinates[0];
@@ -21,16 +11,21 @@ float Camera::GetResY()
 }
 
 Ray Camera::CalculatePrimaryRay(int x, int y)
-{
-	float ux = ((x)/ GetResX())*Width;
-	float vy = ((y) / GetResY())*Height;
+{	
+	Vector2 pixelP;
+	Vector2 randomP = { 0.5, 0.5
+		//static_cast <float> (rand()) / static_cast <float> (RAND_MAX),
+		//static_cast <float> (rand()) / static_cast <float> (RAND_MAX)
+	}; // sample point in [0, 1] x [0, 1]
 
-	Vector3 eyeAt = (Eye - At);
-	float df = (eyeAt).magnitude();
+	pixelP.x() = Width / GetResX() * (x - GetResX() / 2.0f + randomP.x());
+	pixelP.y() = Height / GetResY() * (y - GetResY() / 2.0f + randomP.y());
+
+	float df = (Eye-At).magnitude();
 
 	Ray ray;
 	ray.Origin = Eye;
-	ray.Direction = -df * Ze + Height*(y/GetResY() - 0.5f)*Ye + Width*(x/GetResX() - 0.5f)*Xe;
+	ray.Direction = pixelP.x() * Xe + pixelP.y() * Ye - df * Ze;
 	ray.Direction = ray.Direction.normalize();
 	return ray;
 }

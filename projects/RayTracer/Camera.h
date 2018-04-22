@@ -6,9 +6,8 @@
 class Camera
 {
 public:
-	Camera();
-	Camera(Vector3 eye, Vector3 at, Vector3 up, double fovy, double near, double far, int ResX, int ResY);
-	~Camera();
+	Camera() = default;
+	~Camera() = default;
 	Vector3 Eye;
 	Vector3 At;
 	Vector3 Up;

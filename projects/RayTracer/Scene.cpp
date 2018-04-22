@@ -75,8 +75,11 @@ void Scene::parseAngle(std::stringstream& in)
 void Scene::parseHither(std::stringstream& in)
 {
 	in >> camera->Near;
-	static_cast<ThinLens*>(camera)->d = camera->Near;
-	static_cast<ThinLens*>(camera)->f = (camera->Eye - camera->At).magnitude();
+	if (!static_cast<ThinLens*>(camera)) {
+		static_cast<ThinLens*>(camera)->d = camera->Near;
+		static_cast<ThinLens*>(camera)->f = (camera->Eye - camera->At).magnitude();
+
+	}
 	std::cout << "Hither: " << camera->Near << std::endl;
 	camera->Far = 1000 * camera->Near;
 	

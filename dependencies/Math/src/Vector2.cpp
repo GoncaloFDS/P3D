@@ -12,8 +12,6 @@ Vector2::Vector2(float x, float y)
 {
 	coordinates[0] = x;
 	coordinates[1]= y;
-	this->x = x;
-	this->y = y;
 }
 
 Vector2::~Vector2()
@@ -22,8 +20,8 @@ Vector2::~Vector2()
 
 Vector2 Vector2::clear()
 {
-	if (fabs(this->x) < THRESHOLD) x = 0;
-	if (fabs(this->y) < THRESHOLD) y = 0;
+	if (fabs(coordinates[0]) < THRESHOLD) coordinates[0] = 0;
+	if (fabs(coordinates[1]) < THRESHOLD) coordinates[1] = 0;
 	for( auto i = 0; i < 2; i++)
 		if (fabs(this->coordinates[0]) < THRESHOLD) 
 			this->coordinates[i] = 0;

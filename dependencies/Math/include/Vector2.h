@@ -13,8 +13,6 @@ class Vector2
 {
 public:
 	float coordinates[2];
-	float x;
-	float y;
 	Vector2();
 	Vector2(float, float);
 	~Vector2();
@@ -82,6 +80,8 @@ public:
 
 	float getX() const;
 	float getY() const;
+	float& x() { return coordinates[0]; };
+	float& y() { return coordinates[1]; };
 };
 
 #endif
