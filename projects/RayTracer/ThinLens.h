@@ -11,6 +11,7 @@ public:
 	float d; // distance to view plane
 	float zoom;
 	float samples;
+	float apperture;
 	ThinLens() = default;
 	~ThinLens() = default;
 };

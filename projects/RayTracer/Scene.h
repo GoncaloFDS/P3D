@@ -48,5 +48,6 @@ private:
 	void ParseLine(std::stringstream& in, std::ifstream& file);
 	void ParseAreaLight(std::stringstream& in);
 	void ParseLensRadius(std::stringstream& in);
+	void ParseApperture(std::stringstream & in);
 };
 

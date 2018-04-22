@@ -7,6 +7,7 @@ angle 45
 hither 0.01
 resolution 512 512
 lensRadius 2
+apperture 3
 viewPlaneD 4
 focalPlaneD 8
 /l 4 0 0 1 1 1
