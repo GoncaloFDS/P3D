@@ -59,7 +59,7 @@ bool isPointInShadow(Hit &hit, Vector3 lightDir) {
 	Ray shadowFeeler(hit.Location, lightDir);
 	
 	for (auto obj : scene->getObjects()) {
-		Hit shadowHit = obj->CalculateIntersection(shadowFeeler);
+		Hit shadowHit = obj->calculateIntersection(shadowFeeler);
 
 		if (shadowHit.HasCollided) 
 			if ((lightDir - hit.Location).quadrance() > shadowHit.T * shadowHit.T) //ignore objects behind the light
@@ -76,7 +76,7 @@ Hit calculateClossestHit(Ray ray){
 	double Tmin = DBL_MAX;
 	Hit hit;
 	for (auto obj : scene->getObjects()) {
-		Hit tempHit = obj->CalculateIntersection(ray);
+		Hit tempHit = obj->calculateIntersection(ray);
 		if ((tempHit.HasCollided && tempHit.T < Tmin)) {
 			Tmin = tempHit.T;
 			hit = tempHit;
@@ -92,7 +92,7 @@ Ray calculateReflectedRay(Hit hit, Vector3 ViewDir) {
 
 Ray calculateRefractedRay(Hit hit, Ray ray, Material mat, float RefractionIndex) {
 	Vector3 Nrefr = hit.Normal.normalize();
-	Vector3 I = (hit.Location - ray.Origin).normalize();
+	Vector3 I = (hit.Location - ray.O).normalize();
 	//Vector3 I = -ray.Direction;
 	float NdotI = Nrefr * I;
 	NdotI = clamp(NdotI, 1, -1);
@@ -139,9 +139,9 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 	for (auto light : scene->getLights()) {
 		difColor = Vector3(0, 0, 0);
 		specColor = Vector3(0, 0, 0);
-		for (int i = 0; i < light->GetSampleSize(); i++) {
+		for (int i = 0; i < light->getSampleSize(); i++) {
 			
-			Vector3 lightDir = (light->GetPoint() - hit.Location).normalize();
+			Vector3 lightDir = (light->getPoint() - hit.Location).normalize();
 
 			if(isPointInShadow(hit, lightDir)) 
 				continue; // this light doesn't contribute for this point
@@ -150,27 +150,27 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 			float specular = 0;
 
 			if (lambertian > 0.0f) {
-				viewDir = (-ray.Direction).normalize();
+				viewDir = (-ray.Dir).normalize();
 				Vector3 Rr = 2 * (viewDir * hit.Normal)*hit.Normal - viewDir;
 				float specAngle = std::fmax(Rr * lightDir, 0.0f);
 				specular = pow(specAngle, mat.shininess);
 
 
 				float KdLamb = mat.Kd * lambertian;
-				difColor.r() += mat.color.r() * light->GetColor().r() * KdLamb;
-				difColor.g() += mat.color.g() * light->GetColor().g() * KdLamb;
-				difColor.b() += mat.color.b() * light->GetColor().b() * KdLamb;
+				difColor.r() += mat.color.r() * light->getColor().r() * KdLamb;
+				difColor.g() += mat.color.g() * light->getColor().g() * KdLamb;
+				difColor.b() += mat.color.b() * light->getColor().b() * KdLamb;
 
 				float ksSpec = mat.Ks * specular;
-				specColor.r() += mat.color.r() * light->GetColor().r() * ksSpec;
-				specColor.g() += mat.color.g() * light->GetColor().g() * ksSpec;
-				specColor.b() += mat.color.b() * light->GetColor().b() * ksSpec;
+				specColor.r() += mat.color.r() * light->getColor().r() * ksSpec;
+				specColor.g() += mat.color.g() * light->getColor().g() * ksSpec;
+				specColor.b() += mat.color.b() * light->getColor().b() * ksSpec;
 
 
 
 			}
 		}
-		sum += (difColor + specColor) / light->GetSampleSize();
+		sum += (difColor + specColor) / light->getSampleSize();
 
 	}
 
@@ -179,7 +179,7 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 	if (depth >= MAX_DEPTH) 
 		return color;
 		
- 	Ray reflected = calculateReflectedRay(hit, -ray.Direction);
+ 	Ray reflected = calculateReflectedRay(hit, -ray.Dir);
  	rColor = rayTracing(reflected, depth + 1, RefrIndex);
 	color += mat.Ks*rColor;
 
@@ -187,7 +187,7 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 	//ray = calculate ray in refracted direction;
 	if(mat.isTranslucid){
  		Ray refracted = calculateRefractedRay(hit, ray, mat, RefrIndex);
-		if (refracted.Direction != Vector3(0, 0, 0)) {
+		if (refracted.Dir != Vector3(0, 0, 0)) {
 			Vector3 refrColor = rayTracing(refracted, depth + 1, RefrIndex);
 			color += mat.T * refrColor;
 		}
@@ -365,8 +365,9 @@ void renderScene()
 		for (int x = 0; x < RES_X; x++)
 		{	
 			Vector3 c = Vector3(0, 0, 0);
+			//nSquared = 1;
 			for (int n = 0; n < nSquared; n++) {
-				Ray ray = scene->getCamera()->CalculatePrimaryRay(x , y);
+				Ray ray = scene->getCamera()->calculatePrimaryRay(x , y);
 				c += rayTracing(ray, 1, 1.0);
 			}
 
@@ -494,9 +495,12 @@ int main(int argc, char* argv[])
 		std::cin.get();
 		return 0;
 	}
-	RES_X = scene->getCamera()->GetResX();
-	RES_Y = scene->getCamera()->GetResY();
-	scene->getCamera()->CalculateOtherStuff();
+
+	scene->generateBB();
+
+	RES_X = scene->getCamera()->getResX();
+	RES_Y = scene->getCamera()->getResY();
+	scene->getCamera()->computeParams();
 
 	if(draw_mode == 0) { // desenhar o conteúdo da janela ponto a ponto
 		size_vertices = 2*sizeof(float);

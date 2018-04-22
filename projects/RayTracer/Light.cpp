@@ -4,8 +4,8 @@
 class PointLight 
 {
 public:
-	PointLight();
-	~PointLight();
+	PointLight() = default;
+	~PointLight() = default;
 	Vector3 Position;
 	Vector3 Color;
 };

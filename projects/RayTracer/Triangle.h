@@ -3,10 +3,17 @@
 
 class Triangle : public SceneObject {
 public:
-	Triangle(Vector3 p1, Vector3 p2, Vector3 p3) : Vert1(p1), Vert2(p2), Vert3(p3) {};
+	Triangle(Vector3 p1, Vector3 p2, Vector3 p3) {
+		Verts[0] = p1;
+		Verts[1] = p2;
+		Verts[2] = p3;
+	};
 	~Triangle();
 
-	Vector3 Vert1, Vert2, Vert3;
-	Hit CalculateIntersection(Ray ray) override;
+	Vector3 Verts[3];
+
+	Hit calculateIntersection(Ray ray) override;
+
+	BBox getBoundingBox() override;
 };
 

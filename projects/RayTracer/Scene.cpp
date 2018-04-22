@@ -32,7 +32,7 @@ bool Scene::loadNFF(std::string filepath)
 	}
 	std::string line;
 	while (std::getline(file, line)) {
-		ParseLine(std::stringstream(line), file);
+		parseLine(std::stringstream(line), file);
 	}
 	file.close();
 	return true;
@@ -97,7 +97,7 @@ void Scene::parseLight(std::stringstream& in) {
 	in >> color;
 	auto *light = new Light(pos, color);
 	LightVector.push_back(light);
-	std::cout << "Light position: " << light->GetPoint() << std::endl;
+	std::cout << "Light position: " << light->getPoint() << std::endl;
 }
 
 void Scene::parseObjectMaterials(std::stringstream& in)
@@ -160,7 +160,7 @@ void Scene::parsePolygon(std::stringstream& in, std::ifstream& file) {
 	objects.push_back(triangle);
 }
 
-void Scene::ParseLine(std::stringstream& in, std::ifstream& file)
+void Scene::parseLine(std::stringstream& in, std::ifstream& file)
 {
 	std::string s;
 	in >> s;
@@ -191,18 +191,19 @@ void Scene::ParseLine(std::stringstream& in, std::ifstream& file)
 	else if (s == "p")
 		parsePolygon(in, file); // polygon
 	else if (s == "al")
-		ParseAreaLight(in);
+		parseAreaLight(in);
 	else if (s == "lensRadius")
-		ParseLensRadius(in);
+		parseLensRadius(in);
 	else if (s == "apperture")
-		ParseApperture(in);
+		parseApperture(in);
 	else if (s == "focalp")
-		ParseFocalPlane(in);
+		parseFocalPlane(in);
 	else if (s == "viewp")
-		ParseViewPlane(in);
+		parseViewPlane(in);
+
 }
 
-void Scene::ParseAreaLight(std::stringstream& in) {
+void Scene::parseAreaLight(std::stringstream& in) {
 	Vector3 pos, va, vb, color;
 	in >> pos >> va >> vb >> color;
 	areaLight = new AreaLight(pos, va, vb, color, 10);
@@ -210,25 +211,25 @@ void Scene::ParseAreaLight(std::stringstream& in) {
 	//std::cout << "Area Light c: " << areaLight->c << " a: " << areaLight->a << " b: " << areaLight->b;
 }
 
-void Scene::ParseLensRadius(std::stringstream & in)
+void Scene::parseLensRadius(std::stringstream & in)
 {
 	float radius;
 	in >> (static_cast<ThinLens*>(camera))->radius;
 }
 
-void Scene::ParseApperture(std::stringstream & in)
+void Scene::parseApperture(std::stringstream & in)
 {
 	float apperture;
 	in >> (static_cast<ThinLens*>(camera))->apperture;
 }
 
-void Scene::ParseFocalPlane(std::stringstream & in)
+void Scene::parseFocalPlane(std::stringstream & in)
 {
 	float f;
 	in >> (static_cast<ThinLens*>(camera))->f;
 }
 
-void Scene::ParseViewPlane(std::stringstream & in)
+void Scene::parseViewPlane(std::stringstream & in)
 {
 	float d;
 	in >> (static_cast<ThinLens*>(camera))->d;
@@ -237,4 +238,9 @@ void Scene::ParseViewPlane(std::stringstream & in)
 std::vector<Light*> Scene::getLights()
 {
 	return LightVector;
+}
+
+void Scene::generateBB()
+{
+
 }

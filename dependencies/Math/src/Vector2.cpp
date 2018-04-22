@@ -14,6 +14,12 @@ Vector2::Vector2(float x, float y)
 	coordinates[1]= y;
 }
 
+Vector2::Vector2(float f)
+{
+	coordinates[0] = f;
+	coordinates[1] = f;
+}
+
 Vector2::~Vector2()
 {
 }

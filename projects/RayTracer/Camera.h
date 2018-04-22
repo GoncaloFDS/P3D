@@ -15,12 +15,12 @@ public:
 	float Near; //Hither	
 	float Far;	//Yon
 	float Fovy;
-	float GetResX();
-	float GetResY();
 	float Width;
 	float Height;
 	Vector3 Xe, Ye, Ze;
-	virtual Ray CalculatePrimaryRay(int x, int y);
-	void CalculateOtherStuff();
+	float getResX();
+	float getResY();
+	virtual Ray calculatePrimaryRay(int x, int y);
+	void computeParams();
 };
 

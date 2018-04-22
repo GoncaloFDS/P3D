@@ -24,6 +24,8 @@ public:
 	std::vector<Light*> getLights();
 	Vector3 backgroundColor;
 
+	void generateBB();
+
 private:
 	Camera *camera;
 	std::vector<Light*> LightVector;
@@ -45,11 +47,12 @@ private:
 	void parseSphere(std::stringstream& in);
 	void parsePlane(std::stringstream& in);
 	void parsePolygon(std::stringstream& in, std::ifstream& file);
-	void ParseLine(std::stringstream& in, std::ifstream& file);
-	void ParseAreaLight(std::stringstream& in);
-	void ParseLensRadius(std::stringstream& in);
-	void ParseApperture(std::stringstream & in);
-	void ParseFocalPlane(std::stringstream & in);
-	void ParseViewPlane(std::stringstream & in);
+	void parseLine(std::stringstream& in, std::ifstream& file);
+	void parseAreaLight(std::stringstream& in);
+	void parseLensRadius(std::stringstream& in);
+	void parseApperture(std::stringstream & in);
+	void parseFocalPlane(std::stringstream & in);
+	void parseViewPlane(std::stringstream & in);
+
 };
 

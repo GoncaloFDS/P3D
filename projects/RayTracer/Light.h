@@ -12,11 +12,11 @@ public:
 
 	~Light() = default;
 
-	virtual Vector3 GetPoint() { return Position; }
-	virtual void SetPosition(Vector3 pos) { Position = pos; }
-	Vector3 GetColor() { return Color; }
-	void SetColor(Vector3 c) { Color = c; }
-	int GetSampleSize() { return SampleSize; }
+	virtual Vector3 getPoint() { return Position; }
+	virtual void setPosition(Vector3 pos) { Position = pos; }
+	Vector3 getColor() { return Color; }
+	void setColor(Vector3 c) { Color = c; }
+	int getSampleSize() { return SampleSize; }
 
 protected:
 	Vector3 Position;

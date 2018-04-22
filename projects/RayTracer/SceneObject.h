@@ -2,15 +2,19 @@
 #include "Ray.h"
 #include "Hit.h"
 #include "Material.h"
+#include "BBox.h"
 
 #define KEPSILON 0.0001f
 
 class SceneObject
 {
 public:
-	SceneObject();
-	~SceneObject();
 	Material material;
-	virtual Hit CalculateIntersection(Ray ray);
+
+	SceneObject() = default;
+	~SceneObject() = default;
+	
+	virtual Hit calculateIntersection(Ray ray) = 0;
+	virtual BBox getBoundingBox() = 0;
 };
 

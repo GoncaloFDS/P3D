@@ -161,7 +161,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="projects\RayTracer\AreaLight.cpp" />
+    <ClCompile Include="projects\RayTracer\BBox.cpp" />
     <ClCompile Include="projects\RayTracer\Camera.cpp" />
+    <ClCompile Include="projects\RayTracer\Grid.cpp" />
     <ClCompile Include="projects\RayTracer\Hit.cpp" />
     <ClCompile Include="projects\RayTracer\Light.cpp" />
     <ClCompile Include="projects\RayTracer\Main.cpp" />
@@ -176,7 +178,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="projects\RayTracer\AreaLight.h" />
+    <ClInclude Include="projects\RayTracer\BBox.h" />
     <ClInclude Include="projects\RayTracer\Camera.h" />
+    <ClInclude Include="projects\RayTracer\Grid.h" />
     <ClInclude Include="projects\RayTracer\Hit.h" />
     <ClInclude Include="projects\RayTracer\Light.h" />
     <ClInclude Include="projects\RayTracer\Material.h" />

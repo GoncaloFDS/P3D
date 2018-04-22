@@ -15,6 +15,7 @@ public:
 	float coordinates[2];
 	Vector2();
 	Vector2(float, float);
+	Vector2(float);
 	~Vector2();
 
 	Vector2 clear();

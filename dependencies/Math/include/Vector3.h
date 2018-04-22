@@ -11,6 +11,7 @@ public:
 	float xyz[3];
 	Vector3();
 	Vector3(float, float, float);
+	Vector3(float);
 	Vector3 operator-();
 	~Vector3();
 	Vector3 operator+(const Vector3 vector);

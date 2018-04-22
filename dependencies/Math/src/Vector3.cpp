@@ -18,6 +18,14 @@ Vector3::Vector3(float x, float y, float z)
 	xyz[2] = z;
 }
 
+Vector3::Vector3(float f)
+{
+	xyz[0] = f;
+	xyz[1] = f;
+	xyz[2] = f;
+
+}
+
 Vector3 Vector3::operator-() {
 	return Vector3(-xyz[0], -xyz[1], -xyz[2]);
 }

@@ -7,11 +7,12 @@
 class Sphere : public SceneObject
 {
 public:
-	Sphere();
-	~Sphere();
+	Sphere() = default;
+	~Sphere() = default;
 	Vector3 center;
 	float radius;
 
-	Hit CalculateIntersection(Ray ray) override;
+	Hit calculateIntersection(Ray ray) override;
+	BBox getBoundingBox();
 };
 
