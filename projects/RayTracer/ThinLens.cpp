@@ -34,8 +34,6 @@
 Ray ThinLens::CalculatePrimaryRay(int x, int y)
 {	
 	Ray ray;
-	float apperture = 5;
-	radius = 0.1;
 	//ray Origin 
 	Vector2 pixelP;
 	Vector2 diskP;
@@ -55,7 +53,7 @@ Ray ThinLens::CalculatePrimaryRay(int x, int y)
 	} while (diskP.quadrance() > 1);
 	
 
-	Vector2 lensP = diskP * radius;
+	Vector2 lensP = diskP * radius * apperture; //apperture used to open or close the lens
 
 	ray.Origin = Eye + lensP.x() * Xe + lensP.y() * Ye;
 

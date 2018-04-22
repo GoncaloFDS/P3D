@@ -6,8 +6,8 @@ up 0 0 1
 angle 45
 hither 0.01
 resolution 512 512
-lensRadius 2
-apperture 3
+lensRadius 0.1
+apperture 1
 focalp 3
 viewp 2
 /l 4 0 0 1 1 1
