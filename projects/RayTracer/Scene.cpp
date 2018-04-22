@@ -193,7 +193,13 @@ void Scene::parseLine(std::stringstream& in, std::ifstream& file)
 	else if (s == "al")
 		parseAreaLight(in);
 	else if (s == "lensRadius")
-		ParseLensRadius(in);
+		parseLensRadius(in);
+	else if (s == "apperture")
+		parseApperture(in);
+	else if (s == "focalp")
+		parseFocalPlane(in);
+	else if (s == "viewp")
+		parseViewPlane(in);
 }
 
 void Scene::parseAreaLight(std::stringstream& in) {
@@ -237,11 +243,3 @@ void Scene::generateBB()
 {
 
 }
-
-		parseLensRadius(in);
-	else if (s == "apperture")
-		parseApperture(in);
-	else if (s == "focalp")
-		parseFocalPlane(in);
-	else if (s == "viewp")
-		parseViewPlane(in);
