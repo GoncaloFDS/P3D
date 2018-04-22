@@ -12,5 +12,6 @@ public:
 	float x1 = FLT_MIN, y1 = FLT_MIN, z1 = FLT_MIN;
 
 	Hit calculateIntersection(Ray ray);
+	bool inside(Vector3 O);
 };
 

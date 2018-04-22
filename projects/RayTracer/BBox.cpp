@@ -60,3 +60,11 @@ Hit BBox::calculateIntersection(Ray ray)
 	return Hit(t0 < t1 && t1 > 0.0001);
 }
 
+bool BBox::inside(Vector3 p)
+{
+	return (
+		x0 <= p.x() && p.x() <= x1 &&
+		y0 <= p.y() && p.y() <= y1 &&
+		z0 <= p.z() && p.z() <= z1 );
+}
+

@@ -21,6 +21,7 @@
 #include "Scene.h"
 #include "Ray.h"
 #include <cstdlib>
+#include "Grid.h"
 #define CAPTION "ray tracer"
 
 #define VERTEX_COORD_ATTRIB 0
@@ -123,7 +124,11 @@ Ray calculateRefractedRay(Hit hit, Ray ray, Material mat, float RefractionIndex)
 
 Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 {	
-	Hit hit = calculateClossestHit(ray);
+	Hit hit;
+	if (scene->validGrid())
+		hit = scene->calculateClossestHit(ray);
+	else
+		hit = calculateClossestHit(ray);
 
 	if (!hit.HasCollided) 
 		return scene->backgroundColor;
@@ -165,9 +170,6 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 				specColor.r() += mat.color.r() * light->getColor().r() * ksSpec;
 				specColor.g() += mat.color.g() * light->getColor().g() * ksSpec;
 				specColor.b() += mat.color.b() * light->getColor().b() * ksSpec;
-
-
-
 			}
 		}
 		sum += (difColor + specColor) / light->getSampleSize();
@@ -490,14 +492,14 @@ int main(int argc, char* argv[])
 {
     //INSERT HERE YOUR CODE FOR PARSING NFF FILES
 	scene = new Scene();
-	if (!(scene->loadNFF("random_balls.nff"))) {
+	if (!(scene->loadNFF("noPlane.nff"))) {
 		std::cout << "Failed to load scene" << std::endl;
 		std::cin.get();
 		return 0;
 	}
 
-	scene->generateBB();
 
+	scene->setupGrid();
 	RES_X = scene->getCamera()->getResX();
 	RES_Y = scene->getCamera()->getResY();
 	scene->getCamera()->computeParams();

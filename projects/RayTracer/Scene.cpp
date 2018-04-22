@@ -6,6 +6,7 @@
 #include "AreaLight.h"
 #include "Light.h"
 #include "ThinLens.h"
+#include "Grid.h"
 
 Scene::Scene()
 {
@@ -239,7 +240,13 @@ std::vector<Light*> Scene::getLights()
 	return LightVector;
 }
 
-void Scene::generateBB()
-{
-
+void Scene::setupGrid() {
+	grid = new Grid(&objects);
+	grid->setupCells();
 }
+
+Hit Scene::calculateClossestHit(Ray& ray)
+{
+	return grid->hit(ray);
+}
+

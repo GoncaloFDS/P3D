@@ -12,9 +12,9 @@
 #include "SceneObject.h"
 #include "Sphere.h"
 #include "AreaLight.h"
+#include "Grid.h"
 
-class Scene
-{
+class Scene {
 public:
 	Scene();
 	~Scene();
@@ -23,8 +23,9 @@ public:
 	Camera* getCamera();
 	std::vector<Light*> getLights();
 	Vector3 backgroundColor;
-
-	void generateBB();
+	void setupGrid();
+	bool validGrid() { return grid != nullptr; }
+	Hit calculateClossestHit(Ray& ray);
 
 private:
 	Camera *camera;
@@ -33,6 +34,7 @@ private:
 	std::vector<SceneObject*> objects;
 	std::vector<Material> materials;
 	std::ifstream fileScene;
+	Grid *grid = nullptr;
 
 	void parseBackgroundColor( std::stringstream& in);
 	void parseFrom(std::stringstream& in);
