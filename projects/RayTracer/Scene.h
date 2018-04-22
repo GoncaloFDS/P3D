@@ -49,5 +49,7 @@ private:
 	void ParseAreaLight(std::stringstream& in);
 	void ParseLensRadius(std::stringstream& in);
 	void ParseApperture(std::stringstream & in);
+	void ParseFocalPlane(std::stringstream & in);
+	void ParseViewPlane(std::stringstream & in);
 };
 

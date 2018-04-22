@@ -34,8 +34,6 @@
 Ray ThinLens::CalculatePrimaryRay(int x, int y)
 {	
 	Ray ray;
-	float f = 3;
-	float d = 2;
 	float apperture = 5;
 	radius = 0.1;
 	//ray Origin 

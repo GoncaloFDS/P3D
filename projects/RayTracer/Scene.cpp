@@ -196,6 +196,10 @@ void Scene::ParseLine(std::stringstream& in, std::ifstream& file)
 		ParseLensRadius(in);
 	else if (s == "apperture")
 		ParseApperture(in);
+	else if (s == "focalp")
+		ParseFocalPlane(in);
+	else if (s == "viewp")
+		ParseViewPlane(in);
 }
 
 void Scene::ParseAreaLight(std::stringstream& in) {
@@ -216,6 +220,18 @@ void Scene::ParseApperture(std::stringstream & in)
 {
 	float apperture;
 	in >> (static_cast<ThinLens*>(camera))->apperture;
+}
+
+void Scene::ParseFocalPlane(std::stringstream & in)
+{
+	float f;
+	in >> (static_cast<ThinLens*>(camera))->f;
+}
+
+void Scene::ParseViewPlane(std::stringstream & in)
+{
+	float d;
+	in >> (static_cast<ThinLens*>(camera))->d;
 }
 
 std::vector<Light*> Scene::getLights()
