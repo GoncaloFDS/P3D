@@ -57,7 +57,7 @@ Hit BBox::calculateIntersection(Ray ray)
 	if (tzMax < t1)
 		t1 = tzMax;
 
-	return Hit(t0 < t1 && t1 > 0.0001);
+	return Hit(t0 < t1 && t1 > 0.0001, t1);
 }
 
 bool BBox::inside(Vector3 p)

@@ -213,25 +213,21 @@ void Scene::parseAreaLight(std::stringstream& in) {
 
 void Scene::parseLensRadius(std::stringstream & in)
 {
-	float radius;
 	in >> (static_cast<ThinLens*>(camera))->radius;
 }
 
 void Scene::parseApperture(std::stringstream & in)
 {
-	float apperture;
 	in >> (static_cast<ThinLens*>(camera))->apperture;
 }
 
 void Scene::parseFocalPlane(std::stringstream & in)
 {
-	float f;
 	in >> (static_cast<ThinLens*>(camera))->f;
 }
 
 void Scene::parseViewPlane(std::stringstream & in)
 {
-	float d;
 	in >> (static_cast<ThinLens*>(camera))->d;
 }
 

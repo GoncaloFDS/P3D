@@ -67,7 +67,7 @@ void Grid::setupCells()
 		}
 	}
 	//Objects->erase(Objects->begin(), Objects->end());
-	counts.erase(counts.begin(), counts.end());
+	//counts.erase(counts.begin(), counts.end());
 }
 
 
@@ -161,7 +161,7 @@ Hit Grid::hit(Ray& ray)
 
 	int ix, iy, iz;
 
-	if (Bbox.inside(ray.O)) {  			// does the ray start inside the grid?
+	if (Bbox.inside(ray.O)) {  			   // does the ray start inside the grid?
 		ix = clamp((ox - x0) * Nx / (x1 - x0), 0, Nx - 1);
 		iy = clamp((oy - y0) * Ny / (y1 - y0), 0, Ny - 1);
 		iz = clamp((oz - z0) * Nz / (z1 - z0), 0, Nz - 1);
