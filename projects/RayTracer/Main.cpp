@@ -60,7 +60,7 @@ int WindowHandle = 0;
 bool isPointInShadow(Hit &hit, Vector3 lightDir) {
 	Ray shadowFeeler(hit.Location, lightDir);
 	
-	for (auto obj : scene->getObjects()) {
+	for (auto obj : *scene->getObjects()) {
 		Hit shadowHit = obj->calculateIntersection(shadowFeeler);
 
 		if (shadowHit.HasCollided) 
@@ -77,7 +77,7 @@ double clamp(double x, double upper, double lower){
 Hit calculateClossestHit(Ray ray){
 	double Tmin = DBL_MAX;
 	Hit hit;
-	for (auto obj : scene->getObjects()) {
+	for (auto obj : *scene->getObjects()) {
 		Hit tempHit = obj->calculateIntersection(ray);
 		if ((tempHit.HasCollided && tempHit.T < Tmin)) {
 			Tmin = tempHit.T;
@@ -92,13 +92,13 @@ Ray calculateReflectedRay(Hit hit, Vector3 ViewDir) {
 	return Ray(hit.Location, rr);
 }
 
-Ray calculateRefractedRay(Hit hit, Ray ray, Material mat, float RefractionIndex) {
+Ray calculateRefractedRay(Hit hit, Ray ray, Material *mat, float RefractionIndex) {
 	Vector3 Nrefr = hit.Normal.normalize();
 	Vector3 I = (hit.Location - ray.O).normalize();
 	//Vector3 I = -ray.Direction;
 	float NdotI = Nrefr * I;
 	NdotI = clamp(NdotI, 1, -1);
-	float etai = RefractionIndex, etat = mat.refractionIndex;
+	float etai = RefractionIndex, etat = mat->refractionIndex;
 	if (NdotI < 0) {
 		//outside the surface, cos theta should be positive
 		NdotI = -NdotI;
@@ -126,7 +126,7 @@ Ray calculateRefractedRay(Hit hit, Ray ray, Material mat, float RefractionIndex)
 Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 {	
 	Hit hit;
-	if (!scene->validGrid())
+	if (scene->validGrid())
 		hit = scene->calculateClossestHit(ray);
 	else
 		hit = calculateClossestHit(ray);
@@ -135,14 +135,14 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 		return scene->backgroundColor;
 	
 	Vector3 viewDir;
-	Material mat = hit.Mat;
-	Vector3 color = mat.color * 0; // ambient color
+	Material *mat = hit.Mat;
+	Vector3 color = mat->color * 0; // ambient color
 	Vector3 difColor, specColor;
 	Vector3 rColor = scene->backgroundColor;
 	Vector3 lColor(0, 0, 0);
 	Vector3 sum(0, 0, 0);
 
-	for (auto light : scene->getLights()) {
+	for (auto light : *scene->getLights()) {
 		difColor = Vector3(0, 0, 0);
 		specColor = Vector3(0, 0, 0);
 		for (int i = 0; i < light->getSampleSize(); i++) {
@@ -159,18 +159,18 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 				viewDir = (-ray.Dir).normalize();
 				Vector3 Rr = 2 * (viewDir * hit.Normal)*hit.Normal - viewDir;
 				float specAngle = std::fmax(Rr * lightDir, 0.0f);
-				specular = pow(specAngle, mat.shininess);
+				specular = pow(specAngle, mat->shininess);
 
 
-				float KdLamb = mat.Kd * lambertian;
-				difColor.r() += mat.color.r() * light->getColor().r() * KdLamb;
-				difColor.g() += mat.color.g() * light->getColor().g() * KdLamb;
-				difColor.b() += mat.color.b() * light->getColor().b() * KdLamb;
+				float KdLamb = mat->Kd * lambertian;
+				difColor.r() += mat->color.r() * light->getColor().r() * KdLamb;
+				difColor.g() += mat->color.g() * light->getColor().g() * KdLamb;
+				difColor.b() += mat->color.b() * light->getColor().b() * KdLamb;
 
-				float ksSpec = mat.Ks * specular;
-				specColor.r() += mat.color.r() * light->getColor().r() * ksSpec;
-				specColor.g() += mat.color.g() * light->getColor().g() * ksSpec;
-				specColor.b() += mat.color.b() * light->getColor().b() * ksSpec;
+				float ksSpec = mat->Ks * specular;
+				specColor.r() += mat->color.r() * light->getColor().r() * ksSpec;
+				specColor.g() += mat->color.g() * light->getColor().g() * ksSpec;
+				specColor.b() += mat->color.b() * light->getColor().b() * ksSpec;
 			}
 		}
 		sum += (difColor + specColor) / light->getSampleSize();
@@ -184,15 +184,15 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 		
  	Ray reflected = calculateReflectedRay(hit, -ray.Dir);
  	rColor = rayTracing(reflected, depth + 1, RefrIndex);
-	color += mat.Ks*rColor;
+	color += mat->Ks*rColor;
 
 	//translucid
 	//ray = calculate ray in refracted direction;
-	if(mat.isTranslucid){
+	if(mat->isTranslucid){
  		Ray refracted = calculateRefractedRay(hit, ray, mat, RefrIndex);
 		if (refracted.Dir != Vector3(0, 0, 0)) {
 			Vector3 refrColor = rayTracing(refracted, depth + 1, RefrIndex);
-			color += mat.T * refrColor;
+			color += mat->T * refrColor;
 		}
  	
 	}

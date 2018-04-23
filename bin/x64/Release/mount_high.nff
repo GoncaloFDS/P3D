@@ -7,8 +7,8 @@ angle 45
 hither 0.01
 resolution 512 512
 lensRadius 0.1
-apperture 1
-focalp 3
+apperture 0.2
+focalp 1 
 viewp 2
 l -100 -100 100 1.0 1.0 1.0
 f 1 1 1 0.1 0.1 101.148 0.9 1.2

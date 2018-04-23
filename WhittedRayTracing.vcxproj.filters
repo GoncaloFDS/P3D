@@ -63,6 +63,9 @@
     <ClCompile Include="projects\RayTracer\BBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="projects\RayTracer\NFF.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="projects\RayTracer\targetver.h">
@@ -108,6 +111,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="projects\RayTracer\BBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\RayTracer\NFF.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -15,6 +15,6 @@ public:
 	bool HasCollided = false;
 	Vector3 Normal;
 	double T = DBL_MAX;
-	Material Mat;
+	Material* Mat;
 };
 

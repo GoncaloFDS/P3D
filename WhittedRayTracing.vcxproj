@@ -168,6 +168,7 @@
     <ClCompile Include="projects\RayTracer\Light.cpp" />
     <ClCompile Include="projects\RayTracer\Main.cpp" />
     <ClCompile Include="projects\RayTracer\Material.cpp" />
+    <ClCompile Include="projects\RayTracer\NFF.cpp" />
     <ClCompile Include="projects\RayTracer\Plane.cpp" />
     <ClCompile Include="projects\RayTracer\Ray.cpp" />
     <ClCompile Include="projects\RayTracer\Scene.cpp" />
@@ -184,6 +185,7 @@
     <ClInclude Include="projects\RayTracer\Hit.h" />
     <ClInclude Include="projects\RayTracer\Light.h" />
     <ClInclude Include="projects\RayTracer\Material.h" />
+    <ClInclude Include="projects\RayTracer\NFF.h" />
     <ClInclude Include="projects\RayTracer\Plane.h" />
     <ClInclude Include="projects\RayTracer\Ray.h" />
     <ClInclude Include="projects\RayTracer\Scene.h" />

@@ -9,7 +9,7 @@
 class SceneObject
 {
 public:
-	Material material;
+	Material *material;
 
 	SceneObject() = default;
 	~SceneObject() = default;
