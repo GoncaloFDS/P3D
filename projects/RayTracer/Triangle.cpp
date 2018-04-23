@@ -1,4 +1,6 @@
 #include "Triangle.h"
+#include <stdlib.h>
+#include <algorithm>    // std::min
 
 Triangle::~Triangle(){}
 
@@ -40,26 +42,11 @@ Hit Triangle::calculateIntersection(Ray ray) {
 }
 
 BBox Triangle::getBoundingBox()
-{
-	BBox bbox;
-	Vector3 maxP(FLT_MIN);
-	Vector3 minP(FLT_MAX);
+{	
 
-	for (auto v : Verts) {
-		if (v.x() > maxP.x())
-			maxP.x() = v.x();
-		if (v.y() > maxP.y())
-			maxP.y() = v.y();
-		if (v.z() > maxP.z())
-			maxP.z() = v.z();
+	return(BBox(std::min(std::min(Verts[0].x(), Verts[1].x()), Verts[2].x()) - KEPSILON, std::max(std::max(Verts[0].x(), Verts[1].x()), Verts[2].x()) + KEPSILON,
+		std::min(std::min(Verts[0].y(), Verts[1].y()), Verts[2].y()) - KEPSILON, std::max(std::max(Verts[0].y(), Verts[1].y()), Verts[2].y()) + KEPSILON,
+		std::min(std::min(Verts[0].z(), Verts[1].z()), Verts[2].z()) - KEPSILON, std::max(std::max(Verts[0].z(), Verts[1].z()), Verts[2].z()) + KEPSILON));
 
-		if (bbox.x0 < minP.x())
-			minP.x() = bbox.x0;
-		if (v.y() < minP.y())
-			minP.y() = v.y();
-		if (v.z() < minP.z())
-			minP.z() = v.z();
-	}
 
-	return bbox;
 }

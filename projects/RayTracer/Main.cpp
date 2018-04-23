@@ -126,7 +126,7 @@ Ray calculateRefractedRay(Hit hit, Ray ray, Material mat, float RefractionIndex)
 Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 {	
 	Hit hit;
-	if (scene->validGrid())
+	if (!scene->validGrid())
 		hit = scene->calculateClossestHit(ray);
 	else
 		hit = calculateClossestHit(ray);
@@ -496,7 +496,7 @@ int main(int argc, char* argv[])
 {
     //INSERT HERE YOUR CODE FOR PARSING NFF FILES
 	scene = new Scene();
-	if (!(scene->loadNFF("noPlane.nff"))) {
+	if (!(scene->loadNFF("mount_high.nff"))) {
 		std::cout << "Failed to load scene" << std::endl;
 		std::cin.get();
 		return 0;
