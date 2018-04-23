@@ -22,6 +22,7 @@
 #include "Ray.h"
 #include <cstdlib>
 #include "Grid.h"
+#include <time.h>
 #define CAPTION "ray tracer"
 
 #define VERTEX_COORD_ATTRIB 0
@@ -357,6 +358,7 @@ void drawPoints()
 
 void renderScene()
 {
+	clock_t start = clock();
 	int index_pos=0;
 	int index_col=0;
 	int nSamples = 4;
@@ -397,7 +399,9 @@ void renderScene()
 	if(draw_mode == 2) //preenchar o conteúdo da janela com uma imagem completa
 		 drawPoints();
 
-	printf("Terminou!\n"); 	
+	printf("Terminou!\n");
+	clock_t finish = clock() - start;
+	std::cout << "Running time: " << finish/1000 << "seconds" << std::endl;
 }
 
 void cleanup()
