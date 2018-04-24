@@ -27,7 +27,7 @@
 
 #define VERTEX_COORD_ATTRIB 0
 #define COLOR_ATTRIB 1
-
+#define M_PI 3.14159265358979323846
 #define MAX_DEPTH 4
 
 // Points defined by 2 attributes: positions which are stored in vertices array and colors which are stored in colors array
@@ -51,6 +51,7 @@ GLint UniformId;
 
 Scene* scene = nullptr;
 int RES_X, RES_Y;
+bool glossy = true;
 
 /* Draw Mode: 0 - point by point; 1 - line by line; 2 - full frame */
 int draw_mode=1; 
@@ -87,10 +88,29 @@ Hit calculateClossestHit(Ray ray){
 	}	return hit;
 }
 
+Ray calculateGlossyReflectedRay(Hit hit, Vector3 ViewDir) {
+	Vector3 rr = 2 * (ViewDir * hit.Normal)*hit.Normal - ViewDir;
+	float epson_1 = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+	float epson_2 = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+	float theta = pow(acosf(1 - epson_1), hit.Mat->glosiness);
+	float phi = 2 * M_PI*epson_2;
+
+	float x = sinf(phi)*cosf(theta);
+	float y = sinf(phi)*sinf(theta);
+	float z = cosf(phi);
+
+	Vector3 u = Vector3::crossProduct(rr, hit.Normal);
+	Vector3 v = Vector3::crossProduct(rr,u);
+
+	return Ray(hit.Location, x*u + y*v + z*rr);
+}
+
 Ray calculateReflectedRay(Hit hit, Vector3 ViewDir) {
 	Vector3 rr = 2 * (ViewDir * hit.Normal)*hit.Normal - ViewDir;
+
 	return Ray(hit.Location, rr);
 }
+
 
 Ray calculateRefractedRay(Hit hit, Ray ray, Material *mat, float RefractionIndex) {
 	Vector3 Nrefr = hit.Normal.normalize();
@@ -182,10 +202,14 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 	if (depth >= MAX_DEPTH) 
 		return color;
 		
- 	Ray reflected = calculateReflectedRay(hit, -ray.Dir);
- 	rColor = rayTracing(reflected, depth + 1, RefrIndex);
-	color += mat->Ks*rColor;
-
+	//implement blurry reflections
+	Ray reflected;
+ 	if(mat->glosiness <= 0)
+	 reflected = calculateReflectedRay(hit, -ray.Dir);	
+	else
+		reflected = calculateGlossyReflectedRay(hit, -ray.Dir);
+	rColor = rayTracing(reflected, depth + 1, RefrIndex);
+	color += mat->Ks*rColor;//mat->Ks*rColor;
 	//translucid
 	//ray = calculate ray in refracted direction;
 	if(mat->isTranslucid){
@@ -361,7 +385,7 @@ void renderScene()
 	clock_t start = clock();
 	int index_pos=0;
 	int index_col=0;
-	int nSamples = 4;
+	int nSamples = 8;
 	int nSquared = nSamples * nSamples;
 
 	for (int y = 0; y < RES_Y; y++)
@@ -496,7 +520,7 @@ int main(int argc, char* argv[])
 {
     //INSERT HERE YOUR CODE FOR PARSING NFF FILES
 	scene = new Scene();
-	if (!(scene->loadNFF("mount_high.nff"))) {
+	if (!(scene->loadNFF("random_balls.nff"))) {
 		std::cout << "Failed to load scene" << std::endl;
 		std::cin.get();
 		return 0;

@@ -13,5 +13,6 @@ public:
 	float T;
 	bool isTranslucid;
 	float refractionIndex;
+	float glosiness;
 };
 

@@ -72,8 +72,11 @@ void NFF::parseObjectMaterials(std::stringstream& in)
 	if (material->T > 0)
 		material->isTranslucid = true;
 	in >> material->refractionIndex;
+	in >> material->glosiness;
 	std::cout << "Refraction index: " << material->refractionIndex << std::endl;
 	std::cout << "Material transmittance: " << material->T << std::endl;
+	if(material->glosiness > 0)
+		std::cout << "Material glosiness: " << material->glosiness << std::endl;
 	scene->getMaterials()->push_back(material);
 }
 
