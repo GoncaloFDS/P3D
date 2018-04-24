@@ -3,7 +3,7 @@
 
 Ray ThinLens::calculatePrimaryRay(int x, int y)
 {	
-	if (!DOFenabled){ 
+	if (!DOFenabled || apperture == -1 || f == -1){ 
 		return Camera::calculatePrimaryRay(x, y);
 	}
 
@@ -48,4 +48,6 @@ void ThinLens::computeParams()
 {
 	Camera::computeParams();
 	d = (Eye - At).magnitude();
+	if (f == -1 || apperture == -1)
+		DOFenabled = false;
 }

@@ -63,15 +63,18 @@ int WindowHandle = 0;
 bool isPointInShadow(Hit &hit, Vector3 lightDir) {
 	Ray shadowFeeler(hit.Location, lightDir);
 	
-	for (auto obj : *scene->getObjects()) {
-		Hit shadowHit = obj->calculateIntersection(shadowFeeler);
+	Hit shadowHit = scene->calculateClossestHit(shadowFeeler);
+	return shadowHit.HasCollided;
 
-		if (shadowHit.HasCollided) 
-			if ((lightDir - hit.Location).quadrance() > shadowHit.T * shadowHit.T) //ignore objects behind the light
-				return true;
-		
-	}
-	return false;
+// 	for (auto obj : *scene->getObjects()) {
+// 		Hit shadowHit = obj->calculateIntersection(shadowFeeler);
+// 
+// 		if (shadowHit.HasCollided) 
+// 			if ((lightDir - hit.Location).quadrance() > shadowHit.T * shadowHit.T) //ignore objects behind the light
+// 				return true;
+// 		
+// 	}
+// 	return false;
 }
 
 Hit calculateClossestHit(Ray ray){
@@ -537,16 +540,24 @@ int main(int argc, char* argv[])
 {
     //INSERT HERE YOUR CODE FOR PARSING NFF FILES
 	scene = new Scene();
-	if (!(scene->loadNFF("noPlane.nff"))) {
+	if (!(scene->loadNFF("fewer_balls.nff"))) {
 		std::cout << "Failed to load scene" << std::endl;
 		std::cin.get();
 		return 0;
 	}
 
-	scene->setupGrid();
 	RES_X = scene->getCamera()->getResX();
 	RES_Y = scene->getCamera()->getResY();
 	scene->getCamera()->computeParams();
+	scene->setupGrid();
+	//scene->disableGrid();
+	//scene->getCamera()->toggleDOF();
+	//scene->getCamera()->toggleAA();
+
+	std::cout << "Grid: " << (scene->isGridEnabled() ? "Enabled" : "Disabled") << std::endl;
+	std::cout << "Anti-Aliasing: " << (scene->getCamera()->isAAenabled() ? "Enabled" : "Disabled") << std::endl;
+	std::cout << "Depth of Field: " << (scene->getCamera()->isDOFenabled() ? "Enabled" : "Disabled") << std::endl;
+
 
 	if(draw_mode == 0) { // desenhar o conte�do da janela ponto a ponto
 		size_vertices = 2*sizeof(float);
