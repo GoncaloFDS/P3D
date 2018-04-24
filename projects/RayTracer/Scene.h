@@ -18,16 +18,21 @@ class Scene {
 public:
 	Scene();
 	~Scene() = default;
+	Vector3 backgroundColor;
+
 	bool loadNFF(std::string filepath);
-	Camera* getCamera();
+
 	std::vector<SceneObject*> *getObjects();
 	std::vector<Light*> *getLights();
 	std::vector<Material*> *getMaterials();
-	Vector3 backgroundColor;
+	Camera* getCamera();
+
 	void setupGrid();
 	bool validGrid() { return grid != nullptr; }
-	void enableGrid() { gridEnabled = true; }
+	bool isGridEnabled() { return gridEnabled; }
+	void toggleGrid() { gridEnabled = !gridEnabled; }
 	void disableGrid() { gridEnabled = false; }
+
 	Hit calculateClossestHit(Ray& ray);
 
 private:

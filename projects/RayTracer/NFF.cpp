@@ -154,10 +154,6 @@ void NFF::parseLine(std::stringstream& in, std::ifstream& file)
 		parseApperture(in);
 	else if (s == "focalp")
 		parseFocalPlane(in);
-	else if (s == "viewp")
-		parseViewPlane(in);
-	else if (s == "obj") //.obj file name
-		parseOBJ(in);
 }
 
 void NFF::parseAreaLight(std::stringstream& in) {
@@ -181,14 +177,4 @@ void NFF::parseApperture(std::stringstream & in)
 void NFF::parseFocalPlane(std::stringstream & in)
 {
 	in >> (static_cast<ThinLens*>(scene->getCamera()))->f;
-}
-
-void NFF::parseViewPlane(std::stringstream & in)
-{
-	in >> (static_cast<ThinLens*>(scene->getCamera()))->d;
-}
-
-void NFF::parseOBJ(std::stringstream & in)
-{
-
 }

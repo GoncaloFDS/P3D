@@ -21,15 +21,13 @@ public:
 	float getResX();
 	float getResY();
 	virtual Ray calculatePrimaryRay(int x, int y);
-	void computeParams();
+	virtual void computeParams();
 
-	void enableAA() { AAenabled = true; }
-	void disableAA() { AAenabled = false; }
-	void enableDOF() { DOFenabled = true; }
-	void disableDOF() { DOFenabled = false; }
-	
+	void toggleAA() { AAenabled = !AAenabled; }
+	void toggleDOF() { DOFenabled = !DOFenabled; }	
 	bool isAAenabled() { return AAenabled; }
 	bool isDOFenabled() { return DOFenabled; }
+
 protected:
 	bool AAenabled = true;
 	bool DOFenabled = true;

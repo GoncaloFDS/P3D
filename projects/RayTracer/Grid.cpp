@@ -13,11 +13,11 @@ void Grid::setupCells()
 	Bbox.x1 = p1.x(); Bbox.y1 = p1.y(); Bbox.z1 = p1.z();
 
 	//compute the number of cells in the xyz directions
-	int numObjs = Objects->size();
+	int numObjs = static_cast<int>(Objects->size());
 	float wx = p1.x() - p0.x();
 	float wy = p1.y() - p0.y();
 	float wz = p1.z() - p0.z();
-	float multiplier = 2.0;			//8 times more cells than objectsS
+	float multiplier = 2.0;			//about 8 times more cells than objectsS
 	float s = pow(wx * wy * wz / numObjs, 0.333333);
 	Nx = multiplier * wx / s + 1;
 	Ny = multiplier * wy / s + 1;
@@ -67,7 +67,7 @@ void Grid::setupCells()
 }
 
 
-double Grid::cellClossestHit(std::vector<SceneObject *> cellObjs, Ray& ray, double Tmin, Hit &hit) const
+float Grid::cellClossestHit(std::vector<SceneObject *> cellObjs, Ray& ray, double Tmin, Hit &hit) const
 {
 	for (auto obj : cellObjs) {
 		Hit tempHit = obj->calculateIntersection(ray);
@@ -82,26 +82,26 @@ double Grid::cellClossestHit(std::vector<SceneObject *> cellObjs, Ray& ray, doub
 
 Hit Grid::hit(Ray& ray)
 {
-	double ox = ray.O.x();
-	double oy = ray.O.y();
-	double oz = ray.O.z();
-	double dx = ray.Dir.x();
-	double dy = ray.Dir.y();
-	double dz = ray.Dir.z();
+	float ox = ray.O.x();
+	float oy = ray.O.y();
+	float oz = ray.O.z();
+	float dx = ray.Dir.x();
+	float dy = ray.Dir.y();
+	float dz = ray.Dir.z();
 
-	double x0 = Bbox.x0;
-	double y0 = Bbox.y0;
-	double z0 = Bbox.z0;
-	double x1 = Bbox.x1;
-	double y1 = Bbox.y1;
-	double z1 = Bbox.z1;
+	float x0 = Bbox.x0;
+	float y0 = Bbox.y0;
+	float z0 = Bbox.z0;
+	float x1 = Bbox.x1;
+	float y1 = Bbox.y1;
+	float z1 = Bbox.z1;
 
-	double txMin, tyMin, tzMin;
-	double txMax, tyMax, tzMax;
+	float txMin, tyMin, tzMin;
+	float txMax, tyMax, tzMax;
 
 	// the following code includes modifications from Shirley and Morley (2003)
 
-	double a = 1.0 / dx;
+	float a = 1.0 / dx;
 	if (a >= 0) {
 		txMin = (x0 - ox) * a;
 		txMax = (x1 - ox) * a;
@@ -111,7 +111,7 @@ Hit Grid::hit(Ray& ray)
 		txMax = (x0 - ox) * a;
 	}
 
-	double b = 1.0 / dy;
+	float b = 1.0 / dy;
 	if (b >= 0) {
 		tyMin = (y0 - oy) * b;
 		tyMax = (y1 - oy) * b;
@@ -121,7 +121,7 @@ Hit Grid::hit(Ray& ray)
 		tyMax = (y0 - oy) * b;
 	}
 
-	double c = 1.0 / dz;
+	float c = 1.0 / dz;
 	if (c >= 0) {
 		tzMin = (z0 - oz) * c;
 		tzMax = (z1 - oz) * c;
@@ -131,7 +131,7 @@ Hit Grid::hit(Ray& ray)
 		tzMax = (z0 - oz) * c;
 	}
 
-	double t0, t1;
+	float t0, t1;
 
 	if (txMin > tyMin)
 		t0 = txMin;
@@ -171,11 +171,11 @@ Hit Grid::hit(Ray& ray)
 
 	// ray parameter increments per cell in the x, y, and z directions
 
-	double dtx = (txMax - txMin) / Nx;
-	double dty = (tyMax - tyMin) / Ny;
-	double dtz = (tzMax - tzMin) / Nz;
+	float dtx = (txMax - txMin) / Nx;
+	float dty = (tyMax - tyMin) / Ny;
+	float dtz = (tzMax - tzMin) / Nz;
 
-	double txNext, tyNext, tzNext;
+	float txNext, tyNext, tzNext;
 	int	ixStep, iyStep, izStep;
 	int ixStop, iyStop, izStop;
 
@@ -191,7 +191,7 @@ Hit Grid::hit(Ray& ray)
 	}
 
 	if (dx == 0.0) {
-		txNext = DBL_MAX;
+		txNext = FLT_MAX;
 		ixStep = -1;
 		ixStop = -1;
 	}
@@ -208,7 +208,7 @@ Hit Grid::hit(Ray& ray)
 	}
 
 	if (dy == 0.0) {
-		tyNext = DBL_MAX;
+		tyNext = FLT_MAX;
 		iyStep = -1;
 		iyStop = -1;
 	}
@@ -225,7 +225,7 @@ Hit Grid::hit(Ray& ray)
 	}
 
 	if (dz == 0.0) {
-		tzNext = DBL_MAX;
+		tzNext = FLT_MAX;
 		izStep = -1;
 		izStop = -1;
 	}
@@ -234,7 +234,7 @@ Hit Grid::hit(Ray& ray)
 	// traverse the grid
 
 	while (true) {
-		double Tmin = DBL_MAX;
+		float Tmin = FLT_MAX;
 		Hit hit;
 		auto cellObjs = Cells->at( ix + Nx * iy + Nx * Ny * iz);
 		if (txNext < tyNext && txNext < tzNext) {

@@ -28,7 +28,5 @@ private:
 	void parseLensRadius(std::stringstream& in);
 	void parseApperture(std::stringstream & in);
 	void parseFocalPlane(std::stringstream & in);
-	void parseViewPlane(std::stringstream & in);
-	void parseOBJ(std::stringstream & in);
 };
 

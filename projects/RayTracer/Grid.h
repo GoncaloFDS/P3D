@@ -25,6 +25,6 @@ private:
 
 	Vector3 getMinCoords(); //compute minimum grid coordinates
 	Vector3 getMaxCoords();	// compute maximum grid coordinates
-	double cellClossestHit(std::vector<SceneObject *> cellObjs, Ray& ray, double Tmin, Hit &hit) const;
+	float cellClossestHit(std::vector<SceneObject *> cellObjs, Ray& ray, double Tmin, Hit &hit) const;
 };
 

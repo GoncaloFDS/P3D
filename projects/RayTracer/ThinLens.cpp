@@ -42,3 +42,10 @@ Ray ThinLens::calculatePrimaryRay(int x, int y)
 	ray.Dir = dir.normalize();
 	return ray;
 }
+
+
+void ThinLens::computeParams()
+{
+	Camera::computeParams();
+	d = (Eye - At).magnitude();
+}

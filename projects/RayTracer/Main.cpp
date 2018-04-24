@@ -30,7 +30,7 @@
 #define COLOR_ATTRIB 1
 #define M_PI 3.14159265358979323846
 #define MAX_DEPTH 4
-#define SAMPLE_SIZE 4
+#define SAMPLE_SIZE 16
 
 // Points defined by 2 attributes: positions which are stored in vertices array and colors which are stored in colors array
 float *colors;
@@ -106,7 +106,6 @@ Ray calculateGlossyReflectedRay(Hit hit, Vector3 ViewDir) {
 
 Ray calculateReflectedRay(Hit hit, Vector3 ViewDir) {
 	Vector3 rr = 2 * (ViewDir * hit.Normal)*hit.Normal - ViewDir;
-
 	return Ray(hit.Location, rr);
 }
 
@@ -139,8 +138,6 @@ Ray calculateRefractedRay(Hit hit, Ray ray, Material *mat, float RefractionIndex
 
 ///////////////////////////////////////////////////////////////////////  RAY-TRACE SCENE
 
-
-
 Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 {	
 	Hit hit = scene->calculateClossestHit(ray);
@@ -150,9 +147,9 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 	
 	Vector3 viewDir;
 	Material *mat = hit.Mat;
-	Vector3 color = mat->color * 0; // ambient color
+	Vector3 color;
 	Vector3 difColor, specColor;
-	Vector3 rColor = scene->backgroundColor;
+	Vector3 rColor;
 	Vector3 lColor(0, 0, 0);
 	Vector3 sum(0, 0, 0);
 
@@ -199,11 +196,13 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 	//implement blurry reflections
 	Ray reflected;
  	if(mat->glosiness <= 0)
-	 reflected = calculateReflectedRay(hit, -ray.Dir);	
+		reflected = calculateReflectedRay(hit, -ray.Dir);	
 	else
 		reflected = calculateGlossyReflectedRay(hit, -ray.Dir);
+
 	rColor = rayTracing(reflected, depth + 1, RefrIndex);
-	color += mat->Ks*rColor;//mat->Ks*rColor;
+	color += mat->Ks*rColor;
+
 	//translucid
 	//ray = calculate ray in refracted direction;
 	if(mat->isTranslucid){
@@ -381,21 +380,21 @@ void renderScene()
 	Camera* cam = scene->getCamera();
 	int index_pos = 0;
 	int index_col = 0;
-	int squaredSampleSize = SAMPLE_SIZE * SAMPLE_SIZE;
+	int sampleSize = SAMPLE_SIZE;
 
 	for (int y = 0; y < RES_Y; y++)	{
 		for (int x = 0; x < RES_X; x++)	{	
 			Vector3 c = Vector3(0, 0, 0);
 
 			if (!cam->isAAenabled() && !cam->isDOFenabled())
-				squaredSampleSize = 1;
+				sampleSize = 1;
 			
-			for (int n = 0; n < squaredSampleSize; n++) {
+			for (int n = 0; n < sampleSize; n++) {
 				Ray ray = cam->calculatePrimaryRay(x, y);
 				c += rayTracing(ray, 1, 1.0);
 			}
 
-			Vector3 color = c / (squaredSampleSize);
+			Vector3 color = c / (sampleSize);
 			vertices[index_pos++] = (float)x;
 			vertices[index_pos++] = (float)y;
 			colors[index_col++] = color.r();
@@ -458,12 +457,34 @@ void reshape(int w, int h)
 	ortho(0, (float)RES_X, 0, (float)RES_Y, -1.0, 1.0);
 }
 
+void keyboard(unsigned char key, int x, int y)
+{
+	switch (key) {
+	case 'd':
+		scene->getCamera()->toggleDOF();
+		std::cout << "Depth of Field: " << (scene->getCamera()->isDOFenabled() ? "Enabled" : "Disabled") << std::endl;
+		break;
+	case 'a':
+		scene->getCamera()->toggleAA();
+		std::cout << "Anti-Aliasing: " << (scene->getCamera()->isAAenabled() ? "Enabled" : "Disabled") << std::endl;
+		break;
+	case 'g':
+		scene->toggleGrid();
+		std::cout << "Grid: " << (scene->isGridEnabled() ? "Enabled" : "Disabled") << std::endl;
+		break;
+	default:
+		break;
+	}
+	renderScene();
+	
+}
 /////////////////////////////////////////////////////////////////////// SETUP
 void setupCallbacks() 
 {
 	glutCloseFunc(cleanup);
 	glutDisplayFunc(renderScene);
 	glutReshapeFunc(reshape);
+	glutKeyboardFunc(keyboard);
 }
 
 void setupGLEW() {
