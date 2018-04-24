@@ -134,6 +134,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\MathUtils.h" />
     <ClInclude Include="include\Matrix2.h" />
     <ClInclude Include="include\Matrix3.h" />
     <ClInclude Include="include\Matrix4.h" />

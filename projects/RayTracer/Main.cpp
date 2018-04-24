@@ -1,7 +1,7 @@
  ///////////////////////////////////////////////////////////////////////
 //
 // P3D Course
-// (c) 2016 by João Madeiras Pereira
+// (c) 2016 by Joï¿½o Madeiras Pereira
 // TEMPLATE: Whitted Ray Tracing NFF scenes and drawing points with Modern OpenGL
 //
 //You should develop your rayTracing( Ray ray, int depth, float RefrIndex) which returns a color and
@@ -23,12 +23,14 @@
 #include <cstdlib>
 #include "Grid.h"
 #include <time.h>
+#include "MathUtils.h"
 #define CAPTION "ray tracer"
 
 #define VERTEX_COORD_ATTRIB 0
 #define COLOR_ATTRIB 1
 #define M_PI 3.14159265358979323846
 #define MAX_DEPTH 4
+#define SAMPLE_SIZE 4
 
 // Points defined by 2 attributes: positions which are stored in vertices array and colors which are stored in colors array
 float *colors;
@@ -71,9 +73,6 @@ bool isPointInShadow(Hit &hit, Vector3 lightDir) {
 	}
 	return false;
 }
-double clamp(double x, double upper, double lower){
-	return std::min(upper, std::max(x, lower));
-}
 
 Hit calculateClossestHit(Ray ray){
 	double Tmin = DBL_MAX;
@@ -115,9 +114,8 @@ Ray calculateReflectedRay(Hit hit, Vector3 ViewDir) {
 Ray calculateRefractedRay(Hit hit, Ray ray, Material *mat, float RefractionIndex) {
 	Vector3 Nrefr = hit.Normal.normalize();
 	Vector3 I = (hit.Location - ray.O).normalize();
-	//Vector3 I = -ray.Direction;
 	float NdotI = Nrefr * I;
-	NdotI = clamp(NdotI, 1, -1);
+	NdotI = MathUtils::clamp(NdotI, 1, -1);
 	float etai = RefractionIndex, etat = mat->refractionIndex;
 	if (NdotI < 0) {
 		//outside the surface, cos theta should be positive
@@ -145,11 +143,7 @@ Ray calculateRefractedRay(Hit hit, Ray ray, Material *mat, float RefractionIndex
 
 Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 {	
-	Hit hit;
-	if (scene->validGrid())
-		hit = scene->calculateClossestHit(ray);
-	else
-		hit = calculateClossestHit(ray);
+	Hit hit = scene->calculateClossestHit(ray);
 
 	if (!hit.HasCollided) 
 		return scene->backgroundColor;
@@ -322,8 +316,8 @@ void createBufferObjects()
 	glGenBuffers(2, VboId);
 	glBindBuffer(GL_ARRAY_BUFFER, VboId[0]);
 
-	/* Não é necessário fazer glBufferData, ou seja o envio dos pontos para a placa gráfica pois isso 
-	é feito na drawPoints em tempo de execução com GL_DYNAMIC_DRAW */
+	/* Nï¿½o ï¿½ necessï¿½rio fazer glBufferData, ou seja o envio dos pontos para a placa grï¿½fica pois isso 
+	ï¿½ feito na drawPoints em tempo de execuï¿½ï¿½o com GL_DYNAMIC_DRAW */
 
 	glEnableVertexAttribArray(VERTEX_COORD_ATTRIB);
 	glVertexAttribPointer(VERTEX_COORD_ATTRIB, 2, GL_FLOAT, 0, 0, 0);
@@ -381,50 +375,52 @@ void drawPoints()
 // Render function by primary ray casting from the eye towards the scene's objects
 
 void renderScene()
-{
-	clock_t start = clock();
-	int index_pos=0;
-	int index_col=0;
-	int nSamples = 8;
-	int nSquared = nSamples * nSamples;
+{	
 
-	for (int y = 0; y < RES_Y; y++)
-	{
-		for (int x = 0; x < RES_X; x++)
-		{	
+	clock_t start = clock();
+	Camera* cam = scene->getCamera();
+	int index_pos = 0;
+	int index_col = 0;
+	int squaredSampleSize = SAMPLE_SIZE * SAMPLE_SIZE;
+
+	for (int y = 0; y < RES_Y; y++)	{
+		for (int x = 0; x < RES_X; x++)	{	
 			Vector3 c = Vector3(0, 0, 0);
-			//nSquared = 1;
-			for (int n = 0; n < nSquared; n++) {
-				Ray ray = scene->getCamera()->calculatePrimaryRay(x , y);
+
+			if (!cam->isAAenabled() && !cam->isDOFenabled())
+				squaredSampleSize = 1;
+			
+			for (int n = 0; n < squaredSampleSize; n++) {
+				Ray ray = cam->calculatePrimaryRay(x, y);
 				c += rayTracing(ray, 1, 1.0);
 			}
 
-			Vector3 color = c / (nSquared);
+			Vector3 color = c / (squaredSampleSize);
 			vertices[index_pos++] = (float)x;
 			vertices[index_pos++] = (float)y;
 			colors[index_col++] = color.r();
 			colors[index_col++] = color.g();
 			colors[index_col++] = color.b();
 
-			if (draw_mode == 0) {  // desenhar o conteúdo da janela ponto a ponto
+			if (draw_mode == 0) {  // desenhar o conteï¿½do da janela ponto a ponto
 				drawPoints();
 				index_pos = 0;
 				index_col = 0;
 			}
 		}
 		printf("line %d", y);
-		if(draw_mode == 1) {  // desenhar o conteúdo da janela linha a linha
+		if(draw_mode == 1) {  // desenhar o conteï¿½do da janela linha a linha
 				drawPoints();
 				index_pos=0;
 				index_col=0;
 		}
 	}
 
-	if(draw_mode == 2) //preenchar o conteúdo da janela com uma imagem completa
+	if(draw_mode == 2) //preenchar o conteï¿½do da janela com uma imagem completa
 		 drawPoints();
 
-	printf("Terminou!\n");
 	clock_t finish = clock() - start;
+	printf("Terminou!\n");
 	std::cout << "Running time: " << finish/1000 << "seconds" << std::endl;
 }
 
@@ -520,29 +516,28 @@ int main(int argc, char* argv[])
 {
     //INSERT HERE YOUR CODE FOR PARSING NFF FILES
 	scene = new Scene();
-	if (!(scene->loadNFF("random_balls.nff"))) {
+	if (!(scene->loadNFF("noPlane.nff"))) {
 		std::cout << "Failed to load scene" << std::endl;
 		std::cin.get();
 		return 0;
 	}
-
 
 	scene->setupGrid();
 	RES_X = scene->getCamera()->getResX();
 	RES_Y = scene->getCamera()->getResY();
 	scene->getCamera()->computeParams();
 
-	if(draw_mode == 0) { // desenhar o conteúdo da janela ponto a ponto
+	if(draw_mode == 0) { // desenhar o conteï¿½do da janela ponto a ponto
 		size_vertices = 2*sizeof(float);
 		size_colors = 3*sizeof(float);
 		printf("DRAWING MODE: POINT BY POINT\n");
 	}
-	else if(draw_mode == 1) { // desenhar o conteúdo da janela linha a linha
+	else if(draw_mode == 1) { // desenhar o conteï¿½do da janela linha a linha
 		size_vertices = 2*RES_X*sizeof(float);
 		size_colors = 3*RES_X*sizeof(float);
 		printf("DRAWING MODE: LINE BY LINE\n");
 	}
-	else if(draw_mode == 2) { // preencher o conteúdo da janela com uma imagem completa
+	else if(draw_mode == 2) { // preencher o conteï¿½do da janela com uma imagem completa
 		size_vertices = 2*RES_X*RES_Y*sizeof(float);
 		size_colors = 3*RES_X*RES_Y*sizeof(float);
 		printf("DRAWING MODE: FULL IMAGE\n");

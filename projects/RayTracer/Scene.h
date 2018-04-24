@@ -17,7 +17,7 @@
 class Scene {
 public:
 	Scene();
-	~Scene();
+	~Scene() = default;
 	bool loadNFF(std::string filepath);
 	Camera* getCamera();
 	std::vector<SceneObject*> *getObjects();
@@ -26,6 +26,8 @@ public:
 	Vector3 backgroundColor;
 	void setupGrid();
 	bool validGrid() { return grid != nullptr; }
+	void enableGrid() { gridEnabled = true; }
+	void disableGrid() { gridEnabled = false; }
 	Hit calculateClossestHit(Ray& ray);
 
 private:
@@ -36,8 +38,6 @@ private:
 	std::vector<Material*> *materials;
 	std::ifstream fileScene;
 	Grid *grid = nullptr;
-
-	
-
+	bool gridEnabled = false;
 };
 

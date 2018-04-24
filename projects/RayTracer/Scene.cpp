@@ -17,11 +17,6 @@ Scene::Scene()
 	LightVector = new std::vector<Light *>;
 }
 
-
-Scene::~Scene()
-{
-}
-
 std::vector<SceneObject*> *Scene::getObjects()
 {
 	return objects;
@@ -65,10 +60,24 @@ std::vector<Material*> *Scene::getMaterials()
 void Scene::setupGrid() {
 	grid = new Grid(objects);
 	grid->setupCells();
+	gridEnabled = true;
 }
 
 Hit Scene::calculateClossestHit(Ray& ray)
-{
-	return grid->hit(ray);
+{	
+	if(validGrid() && gridEnabled)
+		return grid->hit(ray);
+	else {
+		double Tmin = DBL_MAX;
+		Hit hit;
+		for (auto obj : *objects) {
+			Hit tempHit = obj->calculateIntersection(ray);
+			if ((tempHit.HasCollided && tempHit.T < Tmin)) {
+				Tmin = tempHit.T;
+				hit = tempHit;
+				hit.Mat = obj->material;
+			}
+		}	return hit;
+	}
 }
 

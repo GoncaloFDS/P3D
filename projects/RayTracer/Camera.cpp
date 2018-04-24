@@ -12,11 +12,14 @@ float Camera::getResY()
 
 Ray Camera::calculatePrimaryRay(int x, int y)
 {	
-	Vector2 pixelP;
-	Vector2 randomP = { 
+	Vector2 pixelP, randomP;
+	if (AAenabled)
+		randomP = { // sample point in [0, 1] x [0, 1]
 		static_cast <float> (rand()) / static_cast <float> (RAND_MAX),
 		static_cast <float> (rand()) / static_cast <float> (RAND_MAX)
-	}; // sample point in [0, 1] x [0, 1]
+	};
+	else
+		randomP = { 0.5, 0.5 };
 
 	pixelP.x() = Width / getResX() * (x - getResX() / 2.0f + randomP.x());
 	pixelP.y() = Height / getResY() * (y - getResY() / 2.0f + randomP.y());

@@ -21,7 +21,6 @@ private:
 	void parseResolution(std::stringstream& in);
 	void parseLight(std::stringstream& in);
 	void parseObjectMaterials(std::stringstream& in);
-	void parseCone(std::stringstream& in);
 	void parseSphere(std::stringstream& in);
 	void parsePlane(std::stringstream& in);
 	void parsePolygon(std::stringstream& in, std::ifstream& file);

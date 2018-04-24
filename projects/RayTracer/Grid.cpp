@@ -1,9 +1,6 @@
 #include "Grid.h"
 #include <float.h>
-
-inline float clamp(float x, float min, float max) {
-	return (x < min ? min : (x > max ? max : x));
-}
+#include "MathUtils.h"
 
 void Grid::setupCells()
 {
@@ -48,12 +45,12 @@ void Grid::setupCells()
 		objBox = Objects->at(i)->getBoundingBox();
 		//compute the cell indices for the corners of the bounding box of the obj
 
-		int ixmin = clamp((objBox.x0 - p0.x()) * Nx / (p1.x() - p0.x()), 0, Nx - 1);
-		int iymin = clamp((objBox.y0 - p0.y()) * Ny / (p1.y() - p0.y()), 0, Ny - 1);
-		int izmin = clamp((objBox.z0 - p0.z()) * Nz / (p1.z() - p0.z()), 0, Nz - 1);
-		int ixmax = clamp((objBox.x1 - p0.x()) * Nx / (p1.x() - p0.x()), 0, Nx - 1);
-		int iymax = clamp((objBox.y1 - p0.y()) * Ny / (p1.y() - p0.y()), 0, Ny - 1);
-		int izmax = clamp((objBox.z1 - p0.z()) * Nz / (p1.z() - p0.z()), 0, Nz - 1);
+		int ixmin = MathUtils::clamp((objBox.x0 - p0.x()) * Nx / (p1.x() - p0.x()), 0, Nx - 1);
+		int iymin = MathUtils::clamp((objBox.y0 - p0.y()) * Ny / (p1.y() - p0.y()), 0, Ny - 1);
+		int izmin = MathUtils::clamp((objBox.z0 - p0.z()) * Nz / (p1.z() - p0.z()), 0, Nz - 1);
+		int ixmax = MathUtils::clamp((objBox.x1 - p0.x()) * Nx / (p1.x() - p0.x()), 0, Nx - 1);
+		int iymax = MathUtils::clamp((objBox.y1 - p0.y()) * Ny / (p1.y() - p0.y()), 0, Ny - 1);
+		int izmax = MathUtils::clamp((objBox.z1 - p0.z()) * Nz / (p1.z() - p0.z()), 0, Nz - 1);
 
 		//add the objects to the cells
 		for (int iz = izmin; iz <= izmax; iz++) {
@@ -66,8 +63,7 @@ void Grid::setupCells()
 			}
 		}
 	}
-	//Objects->erase(Objects->begin(), Objects->end());
-	//counts.erase(counts.begin(), counts.end());
+	counts.erase(counts.begin(), counts.end());
 }
 
 
@@ -158,19 +154,19 @@ Hit Grid::hit(Ray& ray)
 
 
 	// initial cell coordinates
-
+	
 	int ix, iy, iz;
 
 	if (Bbox.inside(ray.O)) {  			   // does the ray start inside the grid?
-		ix = clamp((ox - x0) * Nx / (x1 - x0), 0, Nx - 1);
-		iy = clamp((oy - y0) * Ny / (y1 - y0), 0, Ny - 1);
-		iz = clamp((oz - z0) * Nz / (z1 - z0), 0, Nz - 1);
+		ix = MathUtils::clamp((ox - x0) * Nx / (x1 - x0), 0, Nx - 1);
+		iy = MathUtils::clamp((oy - y0) * Ny / (y1 - y0), 0, Ny - 1);
+		iz = MathUtils::clamp((oz - z0) * Nz / (z1 - z0), 0, Nz - 1);
 	}
 	else {
 		Vector3 p = ray.O + t0 * ray.Dir;  // initial hit point with grid's bounding box
-		ix = clamp((p.x() - x0) * Nx / (x1 - x0), 0, Nx - 1);
-		iy = clamp((p.y() - y0) * Ny / (y1 - y0), 0, Ny - 1);
-		iz = clamp((p.z() - z0) * Nz / (z1 - z0), 0, Nz - 1);
+		ix = MathUtils::clamp((p.x() - x0) * Nx / (x1 - x0), 0, Nx - 1);
+		iy = MathUtils::clamp((p.y() - y0) * Ny / (y1 - y0), 0, Ny - 1);
+		iz = MathUtils::clamp((p.z() - z0) * Nz / (z1 - z0), 0, Nz - 1);
 	}
 
 	// ray parameter increments per cell in the x, y, and z directions

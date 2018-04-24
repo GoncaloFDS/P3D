@@ -13,7 +13,7 @@ Hit Plane::calculateIntersection(Ray ray) {
 }
 
 BBox Plane::getBoundingBox()
-{
-	return BBox();
+{	
+	return BBox(); // plane not rendered if using a grind
 }
 

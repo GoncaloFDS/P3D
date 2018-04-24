@@ -80,10 +80,6 @@ void NFF::parseObjectMaterials(std::stringstream& in)
 	scene->getMaterials()->push_back(material);
 }
 
-void NFF::parseCone(std::stringstream& in)
-{
-}
-
 void NFF::parseSphere(std::stringstream& in)
 {
 	auto sphere = new Sphere();
@@ -144,8 +140,6 @@ void NFF::parseLine(std::stringstream& in, std::ifstream& file)
 		parseLight(in);
 	else if (s == "f")
 		parseObjectMaterials(in); //Object Materials
-	else if (s == "c") //cone primitive
-		parseCone(in);
 	else if (s == "s")
 		parseSphere(in); // sphere primitive
 	else if (s == "pl")
@@ -168,10 +162,10 @@ void NFF::parseLine(std::stringstream& in, std::ifstream& file)
 
 void NFF::parseAreaLight(std::stringstream& in) {
 	Vector3 pos, va, vb, color;
-	in >> pos >> va >> vb >> color;
-	auto areaLight = new AreaLight(pos, va, vb, color, 10);
+	int sampleSize;
+	in >> pos >> va >> vb >> color >> sampleSize;
+	auto areaLight = new AreaLight(pos, va, vb, color, sampleSize);
 	scene->getLights()->push_back(areaLight);
-	//std::cout << "Area Light c: " << areaLight->c << " a: " << areaLight->a << " b: " << areaLight->b;
 }
 
 void NFF::parseLensRadius(std::stringstream & in)
