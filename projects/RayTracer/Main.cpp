@@ -30,7 +30,7 @@
 #define COLOR_ATTRIB 1
 #define M_PI 3.14159265358979323846
 #define MAX_DEPTH 4
-#define SAMPLE_SIZE 16
+#define SAMPLE_SIZE 32
 
 // Points defined by 2 attributes: positions which are stored in vertices array and colors which are stored in colors array
 float *colors;
@@ -90,27 +90,43 @@ Hit calculateClossestHit(Ray ray){
 	}	return hit;
 }
 
-Ray calculateGlossyReflectedRay(Hit hit, Vector3 ViewDir) {
-	Vector3 rr = 2 * (ViewDir * hit.Normal)*hit.Normal - ViewDir;
-	float epson_1 = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-	float epson_2 = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-	float theta = pow(acosf(1 - epson_1), hit.Mat->glosiness);
-	float phi = 2 * M_PI*epson_2;
-
-	float x = sinf(phi)*cosf(theta);
-	float y = sinf(phi)*sinf(theta);
-	float z = cosf(phi);
-
-	Vector3 u = Vector3::crossProduct(rr, hit.Normal);
-	Vector3 v = Vector3::crossProduct(rr,u);
-
-	return Ray(hit.Location, x*u + y*v + z*rr);
-}
-
 Ray calculateReflectedRay(Hit hit, Vector3 ViewDir) {
 	Vector3 rr = 2 * (ViewDir * hit.Normal)*hit.Normal - ViewDir;
 	return Ray(hit.Location, rr);
 }
+
+Ray calculateGlossyReflectedRay(Hit hit, Vector3 ViewDir, float& phong_lobe, float& pdf) {
+	Vector3 rr = calculateReflectedRay(hit, ViewDir).Dir;
+	float epson_1 = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+	float epson_2 = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+	//float theta = pow(acosf(1 - epson_1), hit.Mat->glosiness);
+	//float phi = 2 * M_PI*epson_2;
+
+	//float x = sinf(phi)*cosf(theta);
+	//float y = sinf(phi)*sinf(theta);
+	//float z = cosf(phi);
+
+	float phi = epson_1 * 2.0 * M_PI;
+	float cosTheta = sqrt(1.0 - epson_2);
+	float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
+
+	Vector3 w = rr;
+	Vector3 u = (Vector3::crossProduct(Vector3(0.00424, 1, 0.00764), w)).normalize();
+	//Vector3 u = Vector3::crossProduct(w, hit.Normal);
+	Vector3 v = Vector3::crossProduct(w, u);
+
+	Vector3 S = Vector3(cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta);
+
+	Vector3 jittered_dir = S.x() * u + S.y() * v + S.z() * w;
+
+	if (hit.Normal * jittered_dir < 0.0f) {
+		jittered_dir = -S.x() * u - S.y() * v + S.z() * w;
+	}
+	phong_lobe = pow(rr*jittered_dir, hit.Mat->shininess);
+	pdf = phong_lobe * (hit.Normal*jittered_dir);
+	return Ray(hit.Location, jittered_dir);
+}
+
 
 
 Ray calculateRefractedRay(Hit hit, Ray ray, Material *mat, float RefractionIndex) {
@@ -142,28 +158,34 @@ Ray calculateRefractedRay(Hit hit, Ray ray, Material *mat, float RefractionIndex
 ///////////////////////////////////////////////////////////////////////  RAY-TRACE SCENE
 
 Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
-{	
-	Hit hit = scene->calculateClossestHit(ray);
+{
+	Hit hit;
+	if (scene->validGrid())
+		hit = scene->calculateClossestHit(ray);
+	else
+		hit = calculateClossestHit(ray);
 
-	if (!hit.HasCollided) 
+	if (!hit.HasCollided)
 		return scene->backgroundColor;
-	
+
 	Vector3 viewDir;
 	Material *mat = hit.Mat;
-	Vector3 color;
+	Vector3 color = mat->color * 0; // ambient color
 	Vector3 difColor, specColor;
-	Vector3 rColor;
+	Vector3 rColor = scene->backgroundColor;
 	Vector3 lColor(0, 0, 0);
 	Vector3 sum(0, 0, 0);
-
+	Ray reflected_jit;
+	float pdf = 0;
+	float phong_lobe = 0;
 	for (auto light : *scene->getLights()) {
 		difColor = Vector3(0, 0, 0);
 		specColor = Vector3(0, 0, 0);
 		for (int i = 0; i < light->getSampleSize(); i++) {
-			
+
 			Vector3 lightDir = (light->getPoint() - hit.Location).normalize();
 
-			if(isPointInShadow(hit, lightDir)) 
+			if (isPointInShadow(hit, lightDir))
 				continue; // this light doesn't contribute for this point
 
 			float lambertian = std::fmax(lightDir * hit.Normal, 0.0f);
@@ -174,17 +196,22 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 				Vector3 Rr = 2 * (viewDir * hit.Normal)*hit.Normal - viewDir;
 				float specAngle = std::fmax(Rr * lightDir, 0.0f);
 				specular = pow(specAngle, mat->shininess);
+				if (mat->glosiness > 0.0f) {
 
+					reflected_jit = calculateGlossyReflectedRay(hit, -ray.Dir, phong_lobe, pdf);
+					specular = pow(std::fmax(reflected_jit.Dir * lightDir, 0.0f), mat->shininess);
+				}
 
 				float KdLamb = mat->Kd * lambertian;
 				difColor.r() += mat->color.r() * light->getColor().r() * KdLamb;
 				difColor.g() += mat->color.g() * light->getColor().g() * KdLamb;
 				difColor.b() += mat->color.b() * light->getColor().b() * KdLamb;
-
+		
 				float ksSpec = mat->Ks * specular;
 				specColor.r() += mat->color.r() * light->getColor().r() * ksSpec;
 				specColor.g() += mat->color.g() * light->getColor().g() * ksSpec;
 				specColor.b() += mat->color.b() * light->getColor().b() * ksSpec;
+
 			}
 		}
 		sum += (difColor + specColor) / light->getSampleSize();
@@ -193,33 +220,34 @@ Vector3 rayTracing(Ray ray, int depth, float RefrIndex)
 
 	color += sum;
 
-	if (depth >= MAX_DEPTH) 
+	if (depth >= MAX_DEPTH)
 		return color;
-		
-	//implement blurry reflections
+
+
 	Ray reflected;
- 	if(mat->glosiness <= 0)
-		reflected = calculateReflectedRay(hit, -ray.Dir);	
+	if (mat->glosiness <= 0)
+		reflected = calculateReflectedRay(hit, -ray.Dir);
 	else
-		reflected = calculateGlossyReflectedRay(hit, -ray.Dir);
+		reflected = reflected_jit;
 
 	rColor = rayTracing(reflected, depth + 1, RefrIndex);
 	color += mat->Ks*rColor;
-
-	//translucid
-	//ray = calculate ray in refracted direction;
-	if(mat->isTranslucid){
- 		Ray refracted = calculateRefractedRay(hit, ray, mat, RefrIndex);
+//mat->Ks*rColor;
+							//translucid
+							//ray = calculate ray in refracted direction;
+	if (mat->isTranslucid) {
+		Ray refracted = calculateRefractedRay(hit, ray, mat, RefrIndex);
 		if (refracted.Dir != Vector3(0, 0, 0)) {
 			Vector3 refrColor = rayTracing(refracted, depth + 1, RefrIndex);
 			color += mat->T * refrColor;
 		}
- 	
+
 	}
 
 	return color;
 
 }
+
 
 /////////////////////////////////////////////////////////////////////// ERRORS
 
@@ -540,7 +568,7 @@ int main(int argc, char* argv[])
 {
     //INSERT HERE YOUR CODE FOR PARSING NFF FILES
 	scene = new Scene();
-	if (!(scene->loadNFF("fewer_balls.nff"))) {
+	if (!(scene->loadNFF("random_balls.nff"))) {
 		std::cout << "Failed to load scene" << std::endl;
 		std::cin.get();
 		return 0;
@@ -556,7 +584,7 @@ int main(int argc, char* argv[])
 
 	std::cout << "Grid: " << (scene->isGridEnabled() ? "Enabled" : "Disabled") << std::endl;
 	std::cout << "Anti-Aliasing: " << (scene->getCamera()->isAAenabled() ? "Enabled" : "Disabled") << std::endl;
-	std::cout << "Depth of Field: " << (scene->getCamera()->isDOFenabled() ? "Enabled" : "Disabled") << std::endl;
+	std::cout << "Depth of Field: " << (scene->getCamera()->isDOFenabled	() ? "Enabled" : "Disabled") << std::endl;
 
 
 	if(draw_mode == 0) { // desenhar o conte�do da janela ponto a ponto
